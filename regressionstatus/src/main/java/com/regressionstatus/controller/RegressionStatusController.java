@@ -1,14 +1,22 @@
 package com.regressionstatus.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.regressionstatus.data.RegressionStatusDataUpdater;
+
+
 @Controller
 @RequestMapping("/showCurrentStatus")
 public class RegressionStatusController {
+	
+	@Autowired
+	@Qualifier("regressionStatusDataUpdaterImpl")
+	RegressionStatusDataUpdater regressionStatusUpdater;
 
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public String index(Model model) {
@@ -25,6 +33,8 @@ public class RegressionStatusController {
 		// working url: http://localhost:8080/regressionstatus/hello/index1 
 		model.addAttribute("statusPageTitle", statusPageTitle);
 		model.addAttribute("statusPageHeader", statusPageHeader);
-		return "hello1";	// jsp page to be returned and displayed
+		regressionStatusUpdater.fetchStatusData();
+		regressionStatusUpdater.fillStatusData();
+		return "rstatuspage";	// jsp page to be returned and displayed
 	}
 }
