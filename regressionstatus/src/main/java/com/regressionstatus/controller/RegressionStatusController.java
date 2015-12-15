@@ -28,7 +28,7 @@ public class RegressionStatusController {
 	private final String statusPageTitle = "Status";
 	private final String statusPageHeader = "Regression Status";
 	
-	@RequestMapping(value = "/index1", method = RequestMethod.GET)
+	@RequestMapping(value = "/rstatus", method = RequestMethod.GET)
 	public String index1(Model model) {
 		// working url: http://localhost:8080/regressionstatus/hello/index1 
 		model.addAttribute("statusPageTitle", statusPageTitle);

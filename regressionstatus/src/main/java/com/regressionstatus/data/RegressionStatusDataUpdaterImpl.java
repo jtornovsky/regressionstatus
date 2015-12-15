@@ -1,17 +1,27 @@
 package com.regressionstatus.data;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 @Component("regressionStatusDataUpdaterImpl")
 public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDataUpdater {
 	
-	@Resource
+	@Resource(name="singleSetupCurrentStatusMap")
 	protected Map<StatusTableField, String> singleSetupCurrentStatusMap;
+	
+	@Bean(name="singleSetupCurrentStatusMap")
+	public Map<StatusTableField, String> initSingleSetupCurrentStatusMap() {
+		Map<StatusTableField, String> localSingleSetupsCurrentStatusMap = new HashMap<>();
+		for (StatusTableField statusTableField : StatusTableField.values()) {
+			localSingleSetupsCurrentStatusMap.put(statusTableField, "");
+		}
+		return localSingleSetupsCurrentStatusMap;
+	}
 
 	@Override
 	public void fetchStatusData() {
@@ -28,11 +38,7 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 	@Override
 	public void fillStatusData() {
 		for (StatusTableField statusTableField : StatusTableField.values()) {
-//			List<String> values = getOverallSetupsCurrentStatusMap().get(statusTableField);
-//			values.add(singleSetupCurrentStatusMap.get(statusTableField));
 			getOverallSetupsCurrentStatusMap().get(statusTableField).add(singleSetupCurrentStatusMap.get(statusTableField));
 		}
-
 	}
-
 }
