@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.Resource;
 
@@ -18,7 +19,7 @@ public abstract class AbstractRegressionStatusDataUpdater implements RegressionS
 	
 	@Bean(name="overallSetupsCurrentStatusMap")
 	public Map<StatusTableField, List<String>> initOverallSetupsCurrentStatusMap() {
-		Map<StatusTableField, List<String>> localOverallSetupsCurrentStatusMap = new HashMap<>();
+		Map<StatusTableField, List<String>> localOverallSetupsCurrentStatusMap = new TreeMap<>(); // tree map to sort keys as their ordinal order
 		for (StatusTableField statusTableField : StatusTableField.values()) {
 			localOverallSetupsCurrentStatusMap.put(statusTableField, new ArrayList<>());
 		}
@@ -28,4 +29,13 @@ public abstract class AbstractRegressionStatusDataUpdater implements RegressionS
 	public Map<StatusTableField, List<String>> getOverallSetupsCurrentStatusMap() {
 		return this.overallSetupsCurrentStatusMap;
 	}
+	
+	protected void backUpOldDataAndClearOverallSetupsCurrentStatusMap() {
+		// TODO backup procedure for the old data
+		
+		for (StatusTableField statusTableField : StatusTableField.values()) {
+			overallSetupsCurrentStatusMap.get(statusTableField).clear();
+		}
+	}
+	
 }

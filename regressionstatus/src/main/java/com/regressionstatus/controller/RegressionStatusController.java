@@ -35,6 +35,7 @@ public class RegressionStatusController {
 		model.addAttribute("statusPageHeader", statusPageHeader);
 		regressionStatusUpdater.fetchStatusData();
 		regressionStatusUpdater.fillStatusData();
+		model.addAttribute("dataMap", regressionStatusUpdater.getOverallSetupsCurrentStatusMap());
 		return "rstatuspage";	// jsp page to be returned and displayed
 	}
 }
