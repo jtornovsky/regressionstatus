@@ -5,14 +5,22 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+
+import com.regressionstatus.collectorandparser.ReportField;
 
 @Component("regressionStatusDataUpdaterImpl")
 public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDataUpdater {
 	
 	@Resource(name="singleSetupCurrentStatusMap")
 	private Map<StatusTableField, String> singleSetupCurrentStatusMap;
+	
+	private Map<ReportField, String> parsedAutomationReport;	// to hold parsed report to calculate and fill singleSetupCurrentStatusMap
+	
+	@Value("${remote.station.property.ipdresses}")
+	private String remoteStationsIpAddresses;
 	
 	@Bean(name="singleSetupCurrentStatusMap")
 	public Map<StatusTableField, String> initSingleSetupCurrentStatusMap() {

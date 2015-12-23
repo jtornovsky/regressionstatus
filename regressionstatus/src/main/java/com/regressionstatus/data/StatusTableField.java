@@ -21,5 +21,4 @@ public enum StatusTableField {
 	public String toString() {
 		return field;
 	}
-	
 }

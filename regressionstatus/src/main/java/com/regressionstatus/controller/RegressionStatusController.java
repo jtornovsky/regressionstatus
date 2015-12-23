@@ -30,7 +30,7 @@ public class RegressionStatusController {
 	
 	@RequestMapping(value = "/rstatus", method = RequestMethod.GET)
 	public String index1(Model model) {
-		// working url: http://localhost:8080/regressionstatus/hello/index1 
+		// working url: http://localhost:8080/regressionstatus/hello/index1
 		model.addAttribute("statusPageTitle", statusPageTitle);
 		model.addAttribute("statusPageHeader", statusPageHeader);
 		regressionStatusUpdater.fetchStatusData();
