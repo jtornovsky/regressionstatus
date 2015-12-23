@@ -10,10 +10,10 @@ public interface RegressionStatusDataUpdater {
 	 */
 	public void fetchStatusData();
 	
-	/**
-	 * populate overall status map
-	 */
-	public void fillStatusData();
+//	/**
+//	 * populate overall status map
+//	 */
+//	public void fillStatusData();
 	
 	/**
 	 * 

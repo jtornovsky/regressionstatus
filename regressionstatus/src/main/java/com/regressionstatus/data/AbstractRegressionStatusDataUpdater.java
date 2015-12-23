@@ -38,4 +38,11 @@ public abstract class AbstractRegressionStatusDataUpdater implements RegressionS
 		}
 	}
 	
+	protected void fillOverallSetupsStatusMap(Map<StatusTableField, String> singleSetupCurrentStatusMap) {
+//		backUpOldDataAndClearOverallSetupsCurrentStatusMap();
+		for (StatusTableField statusTableField : StatusTableField.values()) {
+			getOverallSetupsCurrentStatusMap().get(statusTableField).add(singleSetupCurrentStatusMap.get(statusTableField));
+		}
+	}
+	
 }

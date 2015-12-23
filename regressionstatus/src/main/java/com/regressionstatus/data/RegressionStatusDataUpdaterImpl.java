@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDataUpdater {
 	
 	@Resource(name="singleSetupCurrentStatusMap")
-	protected Map<StatusTableField, String> singleSetupCurrentStatusMap;
+	private Map<StatusTableField, String> singleSetupCurrentStatusMap;
 	
 	@Bean(name="singleSetupCurrentStatusMap")
 	public Map<StatusTableField, String> initSingleSetupCurrentStatusMap() {
@@ -28,6 +28,7 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 		for (StatusTableField statusTableField : StatusTableField.values()) {
 			singleSetupCurrentStatusMap.put(statusTableField, "");
 		}
+		backUpOldDataAndClearOverallSetupsCurrentStatusMap();
 		singleSetupCurrentStatusMap.put(StatusTableField.SA_VERSION, "123");
 		singleSetupCurrentStatusMap.put(StatusTableField.RUN_TYPE, "u4");
 		singleSetupCurrentStatusMap.put(StatusTableField.PASS_PERCENTAGE, "96"+"%");
@@ -36,22 +37,18 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 		singleSetupCurrentStatusMap.put(StatusTableField.TOTAL_TESTS_IN_RUN, "1024");
 		singleSetupCurrentStatusMap.put(StatusTableField.RUN_STATUS, "running");
 		singleSetupCurrentStatusMap.put(StatusTableField.DETAILS, "http://");
+		fillOverallSetupsStatusMap(singleSetupCurrentStatusMap);
 		
-//		singleSetupCurrentStatusMap.put(StatusTableField.SA_VERSION, "1223");
-//		singleSetupCurrentStatusMap.put(StatusTableField.RUN_TYPE, "u43");
-//		singleSetupCurrentStatusMap.put(StatusTableField.PASS_PERCENTAGE, "95"+"%");
-//		singleSetupCurrentStatusMap.put(StatusTableField.PASSED_TESTS_OUT_OF_RUN_TESTS, "476 out 900");
-//		singleSetupCurrentStatusMap.put(StatusTableField.PROGRESS_PERCENTAGE, "76" + "%");
-//		singleSetupCurrentStatusMap.put(StatusTableField.TOTAL_TESTS_IN_RUN, "1054");
-//		singleSetupCurrentStatusMap.put(StatusTableField.RUN_STATUS, "stopped");
-//		singleSetupCurrentStatusMap.put(StatusTableField.DETAILS, "http://123");
+		singleSetupCurrentStatusMap.put(StatusTableField.SA_VERSION, "1223");
+		singleSetupCurrentStatusMap.put(StatusTableField.RUN_TYPE, "u43");
+		singleSetupCurrentStatusMap.put(StatusTableField.PASS_PERCENTAGE, "95"+"%");
+		singleSetupCurrentStatusMap.put(StatusTableField.PASSED_TESTS_OUT_OF_RUN_TESTS, "476 out 900");
+		singleSetupCurrentStatusMap.put(StatusTableField.PROGRESS_PERCENTAGE, "76" + "%");
+		singleSetupCurrentStatusMap.put(StatusTableField.TOTAL_TESTS_IN_RUN, "1054");
+		singleSetupCurrentStatusMap.put(StatusTableField.RUN_STATUS, "stopped");
+		singleSetupCurrentStatusMap.put(StatusTableField.DETAILS, "http://123");
+		fillOverallSetupsStatusMap(singleSetupCurrentStatusMap);
 	}
 
-	@Override
-	public void fillStatusData() {
-		backUpOldDataAndClearOverallSetupsCurrentStatusMap();
-		for (StatusTableField statusTableField : StatusTableField.values()) {
-			getOverallSetupsCurrentStatusMap().get(statusTableField).add(singleSetupCurrentStatusMap.get(statusTableField));
-		}
-	}
+
 }
