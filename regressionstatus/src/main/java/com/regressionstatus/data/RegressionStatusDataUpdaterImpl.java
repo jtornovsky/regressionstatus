@@ -5,22 +5,43 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import com.regressionstatus.collectorandparser.DataCollector;
+import com.regressionstatus.collectorandparser.DataParser;
 import com.regressionstatus.collectorandparser.ReportField;
 
 @Component("regressionStatusDataUpdaterImpl")
 public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDataUpdater {
 	
+	private final String MULTI_VALUES_PROPERTY_SEPARATOR = ",";
+	
 	@Resource(name="singleSetupCurrentStatusMap")
 	private Map<StatusTableField, String> singleSetupCurrentStatusMap;
 	
-	private Map<ReportField, String> parsedAutomationReport;	// to hold parsed report to calculate and fill singleSetupCurrentStatusMap
-	
 	@Value("${remote.station.property.ipdresses}")
-	private String remoteStationsIpAddresses;
+	private String remoteStationsIpaddresses;
+	
+	@Value("${remote.station.property.report.source.location}")
+	private String remoteStationJsystemReportSourceLocation;
+	
+	@Value("${local.station.property.report.target.location}")
+	private String localStationJsystemReportTargetLocation;
+	
+	@Autowired
+	@Qualifier("dataCollectorImpl")
+	private DataCollector dataCollector;
+	
+	@Autowired
+	@Qualifier("dataParserImpl")
+	private DataParser dataParser;
+	
+	@Resource(name="parsedAutomationReport")
+	private Map<ReportField, String> parsedAutomationReport;	// to hold parsed report to calculate and fill singleSetupCurrentStatusMap
 	
 	@Bean(name="singleSetupCurrentStatusMap")
 	public Map<StatusTableField, String> initSingleSetupCurrentStatusMap() {
@@ -30,6 +51,15 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 		}
 		return localSingleSetupsCurrentStatusMap;
 	}
+	
+	@Bean(name = "parsedAutomationReport")
+	public Map<ReportField, String> initParsedAutomationReportMap() {
+		Map<ReportField, String> pAutoReportMap = new HashMap<>();
+		for (ReportField reportField : ReportField.values()) {
+			pAutoReportMap.put(reportField, "");
+		}
+		return pAutoReportMap;
+	}
 
 	@Override
 	public void fetchStatusData() {
@@ -37,6 +67,16 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 			singleSetupCurrentStatusMap.put(statusTableField, "");
 		}
 		backUpOldDataAndClearOverallSetupsCurrentStatusMap();
+		
+		for (String remoteStationIpaddress : remoteStationsIpaddresses.split(MULTI_VALUES_PROPERTY_SEPARATOR)) {
+			remoteStationIpaddress = remoteStationIpaddress.trim();
+			remoteStationJsystemReportSourceLocation = remoteStationJsystemReportSourceLocation.trim();
+			localStationJsystemReportTargetLocation = localStationJsystemReportTargetLocation.trim();
+			dataCollector.collectDataAtRemoteStation(remoteStationIpaddress, remoteStationJsystemReportSourceLocation, localStationJsystemReportTargetLocation);
+			parsedAutomationReport = dataParser.parseAutomationReport(localStationJsystemReportTargetLocation);
+			calculateValuesForSingleStationStatus();
+		}
+		
 		singleSetupCurrentStatusMap.put(StatusTableField.SA_VERSION, "123");
 		singleSetupCurrentStatusMap.put(StatusTableField.RUN_TYPE, "u4");
 		singleSetupCurrentStatusMap.put(StatusTableField.PASS_PERCENTAGE, "96"+"%");
@@ -56,6 +96,11 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 		singleSetupCurrentStatusMap.put(StatusTableField.RUN_STATUS, "stopped");
 		singleSetupCurrentStatusMap.put(StatusTableField.DETAILS, "http://123");
 		fillOverallSetupsStatusMap(singleSetupCurrentStatusMap);
+	}
+
+	private void calculateValuesForSingleStationStatus() {
+		// TODO 
+		// singleSetupCurrentStatusMap = parsedAutomationReport // after required calculations
 	}
 
 

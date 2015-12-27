@@ -5,5 +5,5 @@ import java.util.Map;
 
 public interface DataParser {
 
-	public Map<ReportField, String> parseAutomationReport();
+	public Map<ReportField, String> parseAutomationReport(String reportTargetLocation);
 }
