@@ -7,19 +7,16 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 @Component("dataParserImpl")
 public class DataParserImpl implements DataParser {
@@ -27,59 +24,76 @@ public class DataParserImpl implements DataParser {
 	@Override
 	public Map<ReportField, String> parseAutomationReport(String reportTargetLocation) {
 
+		Map<ReportField, String> automationReport = new HashMap<>();
+		
 		try {
-			Document doc = getXmlInDocumentFormat(reportTargetLocation);
+			Document doc = getHtmlInDocumentFormat(reportTargetLocation);
+			for (ReportField reportField : ReportField.values()) {
+				  Element nameElement = doc.getElementById(reportField.toString());
+				  nameElement.getNodeValue();
+			}
+					
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		return null;
+		return automationReport;
 	}
 
-	private Document getXmlInDocumentFormat(String xmlFile) throws Exception {
+	/**
+	 * converts textual html file to doc format 
+	 * @param htmlFile
+	 * @return
+	 * @throws Exception
+	 */
+	private Document getHtmlInDocumentFormat(String htmlFile) throws Exception {
 
-		String formattedXmlFile = formatXmlFile(xmlFile);
-		File fXmlFile = new File(formattedXmlFile); 
+		String formattedHtmlFile = formatHtmlFile(htmlFile);
+		File fHtmlFile = new File(formattedHtmlFile); 
 
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		Document doc = dBuilder.parse(fXmlFile);
+		Document doc = dBuilder.parse(fHtmlFile);
 		doc.getDocumentElement().normalize();
-
+		
 		return doc;
 	}
 
-
-	private String  formatXmlFile(String xmlFile) throws IOException   {
+	/**
+	 * reformats the raw html report to get rid from the unparsable characters
+	 * @param htmlFile
+	 * @return
+	 * @throws IOException
+	 */
+	private String  formatHtmlFile(String htmlFile) throws IOException   {
 
 		List<String> lines = new ArrayList<String>();
 		String line = null;
 
-		File f1 = new File(xmlFile);
-		FileReader fr = new FileReader(f1);
-		BufferedReader br = new BufferedReader(fr);
+		File sourceHtmlFile = new File(htmlFile);
+		FileReader srcFileReader = new FileReader(sourceHtmlFile);
+		BufferedReader srcBufferedReader = new BufferedReader(srcFileReader);
 		
-		String xmlOutFile = xmlFile+".out"; 
-		File f2 = new File(xmlOutFile);
-		FileWriter fw = new FileWriter(f2);
-		BufferedWriter out = new BufferedWriter(fw);
+		String reformattedHtmlFile = htmlFile+".out"; 
+		File targetHtmlFile = new File(reformattedHtmlFile);
+		FileWriter targetFileWriter = new FileWriter(targetHtmlFile);
+		BufferedWriter targetBufferedWriter = new BufferedWriter(targetFileWriter);
 		
-		while ((line = br.readLine()) != null) {
+		while ((line = srcBufferedReader.readLine()) != null) {
 			line = line.replaceAll("&", "AA").replaceAll("<p>", "").replaceAll("</p>", "");
 			lines.add(line);
 		}
 
 		for(String s : lines) {
-			out.write(s);
+			targetBufferedWriter.write(s);
 		}
 		
-		fr.close();
-		br.close();
-		out.flush();
-		out.close();
+		srcFileReader.close();
+		srcBufferedReader.close();
+		targetBufferedWriter.flush();
+		targetBufferedWriter.close();
 		
-		return xmlOutFile;
+		return reformattedHtmlFile;
 	}
 	
 }
