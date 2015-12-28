@@ -18,8 +18,8 @@ import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-@Component("dataParserImpl")
-public class DataParserImpl implements DataParser {
+@Component("JsystemSummaryReportParser")
+public class JsystemSummaryReportParser implements DataParser {
 
 	@Override
 	public Map<ReportField, String> parseAutomationReport(String reportTargetLocation) {
@@ -30,7 +30,7 @@ public class DataParserImpl implements DataParser {
 			Document doc = getHtmlInDocumentFormat(reportTargetLocation);
 			for (ReportField reportField : ReportField.values()) {
 				  Element nameElement = doc.getElementById(reportField.toString());
-				  nameElement.getNodeValue();
+//				  nameElement.getNodeValue();
 			}
 					
 		} catch (Exception e) {

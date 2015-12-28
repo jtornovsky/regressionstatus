@@ -27,17 +27,17 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 	private String remoteStationsIpaddresses;
 	
 	@Value("${remote.station.property.report.source.location}")
-	private String remoteStationJsystemReportSourceLocation;
+	private String remoteStationReportSourceLocation;
 	
 	@Value("${local.station.property.report.target.location}")
-	private String localStationJsystemReportTargetLocation;
+	private String localStationReportTargetLocation;
 	
 	@Autowired
 	@Qualifier("dataCollectorImpl")
 	private DataCollector dataCollector;
 	
 	@Autowired
-	@Qualifier("dataParserImpl")
+	@Qualifier("JsystemSummaryReportParser")
 	private DataParser dataParser;
 	
 	@Resource(name="parsedAutomationReport")
@@ -70,10 +70,10 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 		
 		for (String remoteStationIpaddress : remoteStationsIpaddresses.split(MULTI_VALUES_PROPERTY_SEPARATOR)) {
 			remoteStationIpaddress = remoteStationIpaddress.trim();
-			remoteStationJsystemReportSourceLocation = remoteStationJsystemReportSourceLocation.trim();
-			localStationJsystemReportTargetLocation = localStationJsystemReportTargetLocation.trim();
-			dataCollector.collectDataAtRemoteStation(remoteStationIpaddress, remoteStationJsystemReportSourceLocation, localStationJsystemReportTargetLocation);
-			parsedAutomationReport = dataParser.parseAutomationReport(localStationJsystemReportTargetLocation);
+			remoteStationReportSourceLocation = remoteStationReportSourceLocation.trim();
+			localStationReportTargetLocation = localStationReportTargetLocation.trim();
+			dataCollector.collectDataAtRemoteStation(remoteStationIpaddress, remoteStationReportSourceLocation, localStationReportTargetLocation);
+			parsedAutomationReport = dataParser.parseAutomationReport(localStationReportTargetLocation);
 			calculateValuesForSingleStationStatus();
 		}
 		
