@@ -17,6 +17,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 @Component("JsystemSummaryReportParser")
 public class JsystemSummaryReportParser implements DataParser {
@@ -27,26 +29,20 @@ public class JsystemSummaryReportParser implements DataParser {
 		Map<ReportField, String> automationReport = new HashMap<>();
 		
 		try {
-			Document doc = getHtmlInDocumentFormat(reportTargetLocation);
-			for (ReportField reportField : ReportField.values()) {
-				  Element nameElement = doc.getElementById(reportField.toString());
-//				  nameElement.getNodeValue();
-			}
-					
+			automationReport = getDataFromSummaryFile(reportTargetLocation);				
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		return automationReport;
 	}
 
 	/**
-	 * converts textual html file to doc format 
+	 * retrieves data from the summary.html and puts it into hash map 
 	 * @param htmlFile
 	 * @return
 	 * @throws Exception
 	 */
-	private Document getHtmlInDocumentFormat(String htmlFile) throws Exception {
+	private Map<ReportField, String> getDataFromSummaryFile(String htmlFile) throws Exception {
 
 		String formattedHtmlFile = formatHtmlFile(htmlFile);
 		File fHtmlFile = new File(formattedHtmlFile); 
@@ -55,9 +51,31 @@ public class JsystemSummaryReportParser implements DataParser {
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 		Document doc = dBuilder.parse(fHtmlFile);
 		doc.getDocumentElement().normalize();
+		NodeList list = doc.getElementsByTagName("tr");
+		Map<ReportField,String> summaryValues = new HashMap<>();
 		
-		return doc;
+		if (list != null && list.getLength() > 0) {
+			NodeList tdList;
+			Node tr;
+			String fieldId;
+			String fieldValue;
+			
+			for (int i=0; i < list.getLength(); i++) {
+				tr = list.item(i);
+				tdList = tr.getChildNodes();
+				if(tdList.getLength() == 2) { // taking field with only 2 elements
+					fieldId = tdList.item(0).getTextContent();
+					ReportField reportKey = ReportField.getEnumByString(fieldId);
+					if (reportKey != null) {
+						fieldValue = tdList.item(1).getTextContent();
+						summaryValues.put(reportKey, fieldValue);
+					}
+				}
+			}
+		}
+		return summaryValues;
 	}
+		
 
 	/**
 	 * reformats the raw html report to get rid from the unparsable characters

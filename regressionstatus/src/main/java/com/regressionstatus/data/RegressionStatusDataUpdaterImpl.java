@@ -74,33 +74,56 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 			localStationReportTargetLocation = localStationReportTargetLocation.trim();
 			dataCollector.collectDataAtRemoteStation(remoteStationIpaddress, remoteStationReportSourceLocation, localStationReportTargetLocation);
 			parsedAutomationReport = dataParser.parseAutomationReport(localStationReportTargetLocation);
-			calculateValuesForSingleStationStatus();
+			singleSetupCurrentStatusMap = calculateValuesForSingleStationStatus(parsedAutomationReport);
+			fillOverallSetupsStatusMap(singleSetupCurrentStatusMap);
 		}
-		
-		singleSetupCurrentStatusMap.put(StatusTableField.SA_VERSION, "123");
-		singleSetupCurrentStatusMap.put(StatusTableField.RUN_TYPE, "u4");
-		singleSetupCurrentStatusMap.put(StatusTableField.PASS_PERCENTAGE, "96"+"%");
-		singleSetupCurrentStatusMap.put(StatusTableField.PASSED_TESTS_OUT_OF_RUN_TESTS, "456 out 900");
-		singleSetupCurrentStatusMap.put(StatusTableField.PROGRESS_PERCENTAGE, "56" + "%");
-		singleSetupCurrentStatusMap.put(StatusTableField.TOTAL_TESTS_IN_RUN, "1024");
-		singleSetupCurrentStatusMap.put(StatusTableField.RUN_STATUS, "running");
-		singleSetupCurrentStatusMap.put(StatusTableField.DETAILS, "http://");
-		fillOverallSetupsStatusMap(singleSetupCurrentStatusMap);
-		
-		singleSetupCurrentStatusMap.put(StatusTableField.SA_VERSION, "1223");
-		singleSetupCurrentStatusMap.put(StatusTableField.RUN_TYPE, "u43");
-		singleSetupCurrentStatusMap.put(StatusTableField.PASS_PERCENTAGE, "95"+"%");
-		singleSetupCurrentStatusMap.put(StatusTableField.PASSED_TESTS_OUT_OF_RUN_TESTS, "476 out 900");
-		singleSetupCurrentStatusMap.put(StatusTableField.PROGRESS_PERCENTAGE, "76" + "%");
-		singleSetupCurrentStatusMap.put(StatusTableField.TOTAL_TESTS_IN_RUN, "1054");
-		singleSetupCurrentStatusMap.put(StatusTableField.RUN_STATUS, "stopped");
-		singleSetupCurrentStatusMap.put(StatusTableField.DETAILS, "http://123");
-		fillOverallSetupsStatusMap(singleSetupCurrentStatusMap);
 	}
 
-	private void calculateValuesForSingleStationStatus() {
-		// TODO 
-		// singleSetupCurrentStatusMap = parsedAutomationReport // after required calculations
+	/**
+	 * calculating values of a gathered data
+	 */
+	private Map<StatusTableField, String> calculateValuesForSingleStationStatus(Map<ReportField, String> reportData) {
+		
+		Map<StatusTableField, String> statusMap = new HashMap<>();
+		
+		String saVersion = reportData.get(ReportField.SA_CORE_VERSION)+"-"+reportData.get(ReportField.SA_CORE_VERSION_BUILD);
+		String runType = reportData.get(ReportField.SCENARIO).substring(reportData.get(ReportField.SCENARIO).indexOf('-')+1);
+		String passPercentage = reportData.get(ReportField.PASS_RATE) + "%";
+		String numberOfPassedTests = Integer.parseInt(reportData.get(ReportField.NUMBER_OF_TESTS)) - Integer.parseInt(reportData.get(ReportField.NUMBER_OF_FAILS)) + " out of " + reportData.get(ReportField.NUMBER_OF_TESTS);
+		String progressPercentage = Double.parseDouble(reportData.get(ReportField.NUMBER_OF_TESTS)) / Double.parseDouble(reportData.get(ReportField.NUMBER_OF_TESTS))*100 + "%";
+		String totalTestsInRun = reportData.get(ReportField.TOTAL_ENABLED_TESTS);
+		String runStatus = calculateRunStatus().name();
+		
+		statusMap.put(StatusTableField.SA_VERSION, saVersion);
+		statusMap.put(StatusTableField.RUN_TYPE, runType);
+		statusMap.put(StatusTableField.PASS_PERCENTAGE, passPercentage);
+		statusMap.put(StatusTableField.PASSED_TESTS_OUT_OF_RUN_TESTS, numberOfPassedTests);
+		statusMap.put(StatusTableField.PROGRESS_PERCENTAGE, progressPercentage);
+		statusMap.put(StatusTableField.TOTAL_TESTS_IN_RUN, totalTestsInRun);
+		statusMap.put(StatusTableField.RUN_STATUS, runStatus);
+		statusMap.put(StatusTableField.DETAILS, "no details");
+		
+		return statusMap;
+	}
+	
+	/**
+	 * holds the possible run statuses of a regression
+	 * @author jtornovsky
+	 *
+	 */
+	private enum RunStatus {
+		Running,
+		Suspicious, // in case of no progress in run for a long time
+		Ended,
+		Rerun,
+		Stopped;
+	}
+	
+	private RunStatus calculateRunStatus() {
+		RunStatus runStatus = null;
+		// TODO: think about algorithm how to calculate run status
+		runStatus = RunStatus.Running;
+		return runStatus;
 	}
 
 
