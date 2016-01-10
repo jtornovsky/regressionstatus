@@ -24,6 +24,7 @@ public enum ReportField {
 	SA_CORE_VERSION_BUILD("SA1000 Core version Build"),
 	SCENARIO("Scenario"),
 	SV_CORE_VERSION("SmartVision Core version"),
+	STATION("Station"),
 	SV_CORE_VERSION_BUILD("SmartVision Core version Build");
 	
 	private final String field;

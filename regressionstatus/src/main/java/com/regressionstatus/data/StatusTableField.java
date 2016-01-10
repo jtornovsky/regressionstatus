@@ -9,7 +9,8 @@ public enum StatusTableField {
 	PROGRESS_PERCENTAGE("Progress percentage"),
 	TOTAL_TESTS_IN_RUN("Total tests in run"),
 	RUN_STATUS("Run status"),
-	DETAILS("Details(url)");
+	URL("Url"),
+	DETAILS("Details");
 	
 	private final String field;
 

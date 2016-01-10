@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -93,6 +95,12 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 		String progressPercentage = Double.parseDouble(reportData.get(ReportField.NUMBER_OF_TESTS)) / Double.parseDouble(reportData.get(ReportField.NUMBER_OF_TESTS))*100 + "%";
 		String totalTestsInRun = reportData.get(ReportField.TOTAL_ENABLED_TESTS);
 		String runStatus = calculateRunStatus().name();
+		URL url = null;
+		try {
+			url = new URL("http://"+reportData.get(ReportField.STATION));
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 		
 		statusMap.put(StatusTableField.SA_VERSION, saVersion);
 		statusMap.put(StatusTableField.RUN_TYPE, runType);
@@ -101,6 +109,7 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 		statusMap.put(StatusTableField.PROGRESS_PERCENTAGE, progressPercentage);
 		statusMap.put(StatusTableField.TOTAL_TESTS_IN_RUN, totalTestsInRun);
 		statusMap.put(StatusTableField.RUN_STATUS, runStatus);
+		statusMap.put(StatusTableField.URL, url.toString());
 		statusMap.put(StatusTableField.DETAILS, "no details");
 		
 		return statusMap;
