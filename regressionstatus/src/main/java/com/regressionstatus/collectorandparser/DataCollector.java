@@ -2,5 +2,5 @@ package com.regressionstatus.collectorandparser;
 
 public interface DataCollector {
 
-	public String collectDataAtRemoteStation(String remoteStationIpaddress, String jsystemReportSourceLocation, String jsystemReportTargetLocation);
+	public void collectDataAtRemoteStation(String remoteStationIpaddress, String remoteStationReportSourceFile, String localStationReportTargetFile);
 }

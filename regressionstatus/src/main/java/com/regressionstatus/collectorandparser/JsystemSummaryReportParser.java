@@ -20,7 +20,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-@Component("JsystemSummaryReportParser")
+@Component("jsystemSummaryReportParser")
 public class JsystemSummaryReportParser implements DataParser {
 
 	@Override

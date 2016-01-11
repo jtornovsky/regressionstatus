@@ -15,6 +15,7 @@ public enum ReportField {
 	PROGRESS("Progress"),	
 	TOTAL_ENABLED_TESTS("TotalEnabledTests"),	
 	TOTAL_TESTS("TotalTests"),
+	TESTS_IN_RUN("TestsInRun"),
 	DATE("Date"),
 	HYDRA_CHIMERA_VERSION("Hydra/Chimera version"),
 	MEDUSA_VERSION("Medusa Content Server version"),

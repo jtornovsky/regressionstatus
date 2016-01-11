@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,18 +29,18 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 	@Value("${remote.station.property.ipdresses}")
 	private String remoteStationsIpaddresses;
 	
-	@Value("${remote.station.property.report.source.location}")
-	private String remoteStationReportSourceLocation;
+	@Value("${remote.station.property.report.source.summary.file}")
+	private String remoteStationReportSourceFile;
 	
-	@Value("${local.station.property.report.target.location}")
+	@Value("${local.station.property.report.target.summary.file.location}")
 	private String localStationReportTargetLocation;
 	
 	@Autowired
-	@Qualifier("dataCollectorImpl")
+	@Qualifier("jsystemSummaryReportCollector")
 	private DataCollector dataCollector;
 	
 	@Autowired
-	@Qualifier("JsystemSummaryReportParser")
+	@Qualifier("jsystemSummaryReportParser")
 	private DataParser dataParser;
 	
 	@Resource(name="parsedAutomationReport")
@@ -72,10 +73,10 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 		
 		for (String remoteStationIpaddress : remoteStationsIpaddresses.split(MULTI_VALUES_PROPERTY_SEPARATOR)) {
 			remoteStationIpaddress = remoteStationIpaddress.trim();
-			remoteStationReportSourceLocation = remoteStationReportSourceLocation.trim();
-			localStationReportTargetLocation = localStationReportTargetLocation.trim();
-			dataCollector.collectDataAtRemoteStation(remoteStationIpaddress, remoteStationReportSourceLocation, localStationReportTargetLocation);
-			parsedAutomationReport = dataParser.parseAutomationReport(localStationReportTargetLocation);
+			remoteStationReportSourceFile = remoteStationReportSourceFile.trim();
+			String targetFile = localStationReportTargetLocation.trim() + File.separator + remoteStationIpaddress + "_" + remoteStationReportSourceFile; 
+			dataCollector.collectDataAtRemoteStation(remoteStationIpaddress, remoteStationReportSourceFile, targetFile);
+			parsedAutomationReport = dataParser.parseAutomationReport(targetFile);
 			singleSetupCurrentStatusMap = calculateValuesForSingleStationStatus(parsedAutomationReport);
 			fillOverallSetupsStatusMap(singleSetupCurrentStatusMap);
 		}
@@ -88,13 +89,22 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 		
 		Map<StatusTableField, String> statusMap = new HashMap<>();
 		
+		String totalTestsInRun = reportData.get(ReportField.TOTAL_ENABLED_TESTS);
+		if (totalTestsInRun == null) {
+			totalTestsInRun = reportData.get(ReportField.TESTS_IN_RUN);
+		}
+		
+		if (totalTestsInRun == null) {
+			// TODO handle exception in spring mvc way
+		}
+		
 		String saVersion = reportData.get(ReportField.SA_CORE_VERSION)+"-"+reportData.get(ReportField.SA_CORE_VERSION_BUILD);
 		String runType = reportData.get(ReportField.SCENARIO).substring(reportData.get(ReportField.SCENARIO).indexOf('-')+1);
 		String passPercentage = reportData.get(ReportField.PASS_RATE) + "%";
 		String numberOfPassedTests = Integer.parseInt(reportData.get(ReportField.NUMBER_OF_TESTS)) - Integer.parseInt(reportData.get(ReportField.NUMBER_OF_FAILS)) + " out of " + reportData.get(ReportField.NUMBER_OF_TESTS);
-		String progressPercentage = Double.parseDouble(reportData.get(ReportField.NUMBER_OF_TESTS)) / Double.parseDouble(reportData.get(ReportField.NUMBER_OF_TESTS))*100 + "%";
-		String totalTestsInRun = reportData.get(ReportField.TOTAL_ENABLED_TESTS);
-		String runStatus = calculateRunStatus().name();
+		double progressPercentageRealValue = Double.parseDouble(reportData.get(ReportField.NUMBER_OF_TESTS)) / Double.parseDouble(totalTestsInRun)*100;
+		String progressPercentage = String.format("%.2f", progressPercentageRealValue) + "%";
+		String runStatus = calculateRunStatus(progressPercentageRealValue).name();
 		URL url = null;
 		try {
 			url = new URL("http://"+reportData.get(ReportField.STATION));
@@ -128,10 +138,13 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 		Stopped;
 	}
 	
-	private RunStatus calculateRunStatus() {
+	private RunStatus calculateRunStatus(double progressPercentageRealValue) {
 		RunStatus runStatus = null;
 		// TODO: think about algorithm how to calculate run status
 		runStatus = RunStatus.Running;
+		if (progressPercentageRealValue > 99.99) {
+			runStatus = RunStatus.Ended;
+		}
 		return runStatus;
 	}
 
