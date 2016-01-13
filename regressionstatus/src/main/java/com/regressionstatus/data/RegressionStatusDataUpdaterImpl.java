@@ -104,7 +104,7 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 		String numberOfPassedTests = Integer.parseInt(reportData.get(ReportField.NUMBER_OF_TESTS)) - Integer.parseInt(reportData.get(ReportField.NUMBER_OF_FAILS)) + " out of " + reportData.get(ReportField.NUMBER_OF_TESTS);
 		double progressPercentageRealValue = Double.parseDouble(reportData.get(ReportField.NUMBER_OF_TESTS)) / Double.parseDouble(totalTestsInRun)*100;
 		String progressPercentage = String.format("%.2f", progressPercentageRealValue) + "%";
-		String runStatus = calculateRunStatus(progressPercentageRealValue).name();
+		String runStatus = calculateRunStatus(progressPercentageRealValue);
 		URL url = null;
 		try {
 			url = new URL("http://"+reportData.get(ReportField.STATION));
@@ -138,14 +138,14 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 		Stopped;
 	}
 	
-	private RunStatus calculateRunStatus(double progressPercentageRealValue) {
+	private String calculateRunStatus(double progressPercentageRealValue) {
 		RunStatus runStatus = null;
 		// TODO: think about algorithm how to calculate run status
 		runStatus = RunStatus.Running;
 		if (progressPercentageRealValue > 99.99) {
 			runStatus = RunStatus.Ended;
 		}
-		return runStatus;
+		return runStatus.name();
 	}
 
 

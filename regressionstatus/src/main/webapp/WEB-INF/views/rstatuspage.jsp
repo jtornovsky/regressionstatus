@@ -1,9 +1,8 @@
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map"%>
 <%@page import="com.regressionstatus.data.StatusTableField"%>
-<%@ page language="java" contentType="text/html; charset=windows-1255"
-	pageEncoding="windows-1255"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@page language="java" contentType="text/html; charset=windows-1255" pageEncoding="windows-1255"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -12,6 +11,12 @@
 <title>${statusPageTitle}</title>
 </head>
 <body>
+	<%
+	String regressionCurrentStatusWebpageAutoRefreshInterval = (String)request.getAttribute("regressionCurrentStatusWebpageAutoRefreshInterval");
+	response.addHeader("Refresh",regressionCurrentStatusWebpageAutoRefreshInterval);
+	%>
+	Page auto refreshed every <%= (String)request.getAttribute("regressionCurrentStatusWebpageAutoRefreshInterval") %> seconds.</br> 
+	Last refreshed at <%= new java.util.Date()%>.</br><br></br><br></br>
 	<h1>${statusPageHeader}</h1>
 	<table border="2" cellpadding="3" cellspacing="1">
 		<thead>
@@ -21,7 +26,6 @@
 				</c:forEach>
 			</tr>
 		</thead>
-
 		<tbody>
 			<%
 				Map<StatusTableField, List<String>> resp = (Map<StatusTableField, List<String>>) request.getAttribute("dataMap");
@@ -35,7 +39,6 @@
 				}
 			%>
 		</tbody>
-
 	</table>
 </body>
 </html>
