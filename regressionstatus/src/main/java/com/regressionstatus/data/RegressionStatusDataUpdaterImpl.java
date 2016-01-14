@@ -89,27 +89,38 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 		
 		Map<StatusTableField, String> statusMap = new HashMap<>();
 		
-		String totalTestsInRun = reportData.get(ReportField.TOTAL_ENABLED_TESTS);
-		if (totalTestsInRun == null) {
-			totalTestsInRun = reportData.get(ReportField.TESTS_IN_RUN);
+		String totalTestsInRunInStringFormat = reportData.get(ReportField.TOTAL_ENABLED_TESTS);
+		if (totalTestsInRunInStringFormat == null) {
+			totalTestsInRunInStringFormat = reportData.get(ReportField.TESTS_IN_RUN);
 		}
 		
-		if (totalTestsInRun == null) {
-			// TODO handle exception in spring mvc way
+		int numberOfTests = 0;
+		int numberOfFails = 0;
+		double totalTestsInRun = 0;
+		
+		try {
+			numberOfTests = Integer.parseInt(reportData.get(ReportField.NUMBER_OF_TESTS));
+			numberOfFails = Integer.parseInt(reportData.get(ReportField.NUMBER_OF_FAILS));
+			totalTestsInRun = Double.parseDouble(totalTestsInRunInStringFormat);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return statusMap;
 		}
 		
 		String saVersion = reportData.get(ReportField.SA_CORE_VERSION)+"-"+reportData.get(ReportField.SA_CORE_VERSION_BUILD);
 		String runType = reportData.get(ReportField.SCENARIO).substring(reportData.get(ReportField.SCENARIO).indexOf('-')+1);
 		String passPercentage = reportData.get(ReportField.PASS_RATE) + "%";
-		String numberOfPassedTests = Integer.parseInt(reportData.get(ReportField.NUMBER_OF_TESTS)) - Integer.parseInt(reportData.get(ReportField.NUMBER_OF_FAILS)) + " out of " + reportData.get(ReportField.NUMBER_OF_TESTS);
-		double progressPercentageRealValue = Double.parseDouble(reportData.get(ReportField.NUMBER_OF_TESTS)) / Double.parseDouble(totalTestsInRun)*100;
+		String numberOfPassedTests = (numberOfTests - numberOfFails) + " out of " + reportData.get(ReportField.NUMBER_OF_TESTS);
+		double progressPercentageRealValue = (double)(numberOfTests) / totalTestsInRun*100;
 		String progressPercentage = String.format("%.2f", progressPercentageRealValue) + "%";
 		String runStatus = calculateRunStatus(progressPercentageRealValue);
+		
 		URL url = null;
 		try {
 			url = new URL("http://"+reportData.get(ReportField.STATION));
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
+			return statusMap;
 		}
 		
 		statusMap.put(StatusTableField.SA_VERSION, saVersion);
@@ -117,7 +128,7 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 		statusMap.put(StatusTableField.PASS_PERCENTAGE, passPercentage);
 		statusMap.put(StatusTableField.PASSED_TESTS_OUT_OF_RUN_TESTS, numberOfPassedTests);
 		statusMap.put(StatusTableField.PROGRESS_PERCENTAGE, progressPercentage);
-		statusMap.put(StatusTableField.TOTAL_TESTS_IN_RUN, totalTestsInRun);
+		statusMap.put(StatusTableField.TOTAL_TESTS_IN_RUN, totalTestsInRunInStringFormat);
 		statusMap.put(StatusTableField.RUN_STATUS, runStatus);
 		statusMap.put(StatusTableField.URL, url.toString());
 		statusMap.put(StatusTableField.DETAILS, "no details");
