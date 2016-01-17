@@ -35,10 +35,11 @@
 					out.println("<tr>");
 					for (CurrentStatusTableField status : resp.keySet()) {
 						fieldToShow = resp.get(status).get(i);
-						if(status.equals(CurrentStatusTableField.URL)) {
+						switch(status) {
+						case URL:
 							fieldToShow = "<td><a href='" + resp.get(status).get(i) + "'>" + resp.get(status).get(i) + "</a></td>";
-						}
-						else {
+							break;
+						default:
 							fieldToShow = "<td>" + resp.get(status).get(i) + "</td>"; 
 						}
 						out.println(fieldToShow);

@@ -132,7 +132,7 @@ public class CurrentRegressionStatusDataUpdaterSummaryReport extends AbstractCur
 		statusMap.put(CurrentStatusTableField.PROGRESS_PERCENTAGE, progressPercentage);
 		statusMap.put(CurrentStatusTableField.TOTAL_TESTS_IN_RUN, totalTestsInRunInStringFormat);
 		statusMap.put(CurrentStatusTableField.RUN_STATUS, runStatus);
-		statusMap.put(CurrentStatusTableField.DETAILS, "no details");
+//		statusMap.put(CurrentStatusTableField.COMMENTS, "no details");
 		
 		URL url = null;
 		try {

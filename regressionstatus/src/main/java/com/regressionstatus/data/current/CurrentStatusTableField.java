@@ -14,8 +14,8 @@ public enum CurrentStatusTableField {
 	PROGRESS_PERCENTAGE("Progress percentage"),
 	TOTAL_TESTS_IN_RUN("Total tests in run"),
 	RUN_STATUS("Run status"),
-	URL("Url"),
-	DETAILS("Details");
+	URL("Url");
+//	COMMENTS("Comments");	-- field temporary disabled
 	
 	private final String field;
 
