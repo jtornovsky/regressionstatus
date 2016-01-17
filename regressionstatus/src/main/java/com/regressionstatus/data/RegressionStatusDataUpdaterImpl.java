@@ -91,13 +91,16 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 		
 		String saVersion = reportData.get(ReportField.SA_CORE_VERSION)+"-"+reportData.get(ReportField.SA_CORE_VERSION_BUILD);
 		String runType = reportData.get(ReportField.SCENARIO).substring(reportData.get(ReportField.SCENARIO).indexOf('-')+1);
-		
-		statusMap.put(StatusTableField.SA_VERSION, saVersion);
-		statusMap.put(StatusTableField.RUN_TYPE, runType);
-		
 		String totalTestsInRunInStringFormat = reportData.get(ReportField.TOTAL_ENABLED_TESTS);
 		if (totalTestsInRunInStringFormat == null) {
 			totalTestsInRunInStringFormat = reportData.get(ReportField.TESTS_IN_RUN);
+		}
+		
+		if (saVersion != null && runType != null && totalTestsInRunInStringFormat != null) {
+			statusMap.put(StatusTableField.SA_VERSION, saVersion);
+			statusMap.put(StatusTableField.RUN_TYPE, runType);
+		} else {
+			return statusMap;
 		}
 		
 		int numberOfTests = 0;
