@@ -18,6 +18,7 @@ import com.regressionstatus.collectorandparser.DataCollector;
 import com.regressionstatus.collectorandparser.DataParser;
 import com.regressionstatus.collectorandparser.summaryhtml.JsystemSummaryReportField;
 import com.regressionstatus.data.current.CurrentStatusTableField;
+import com.regressionstatus.data.current.runstatus.RunStatusCalculator;
 
 /**
  * Class holds functionality to retrieve and calculate current regression status 
@@ -49,6 +50,10 @@ public class CurrentRegressionStatusDataUpdaterSummaryReport extends AbstractCur
 	@Autowired
 	@Qualifier("jsystemSummaryReportParser")
 	private DataParser dataParser;
+
+	@Autowired
+	@Qualifier("runStatusGeneralCalculator")
+	private RunStatusCalculator runStatusGeneralCalculator;
 	
 	@Resource(name="parsedAutomationReport")
 	private Map<JsystemSummaryReportField, String> parsedAutomationReport;	// to hold parsed report to calculate and fill singleSetupCurrentStatusMap
@@ -125,7 +130,7 @@ public class CurrentRegressionStatusDataUpdaterSummaryReport extends AbstractCur
 		String numberOfPassedTests = (numberOfTests - numberOfFails) + " out of " + reportData.get(JsystemSummaryReportField.NUMBER_OF_TESTS);
 		double progressPercentageRealValue = (double)(numberOfTests) / totalTestsInRun*100;
 		String progressPercentage = String.format("%.2f", progressPercentageRealValue) + "%";
-		String runStatus = calculateRunStatus(progressPercentageRealValue);
+		String runStatus = runStatusGeneralCalculator.calculateRunStatus(progressPercentageRealValue).toString();
 		
 		statusMap.put(CurrentStatusTableField.PASS_PERCENTAGE, passPercentage);
 		statusMap.put(CurrentStatusTableField.PASSED_TESTS_OUT_OF_RUN_TESTS, numberOfPassedTests);
@@ -144,29 +149,5 @@ public class CurrentRegressionStatusDataUpdaterSummaryReport extends AbstractCur
 		statusMap.put(CurrentStatusTableField.URL, url.toString());
 		return statusMap;
 	}
-	
-	/**
-	 * holds the possible run statuses of a regression
-	 * @author jtornovsky
-	 *
-	 */
-	private enum RunStatus {
-		Running,
-		Suspicious, // in case of no progress in run for a long time
-		Ended,
-		Rerun,
-		Stopped;
-	}
-	
-	private String calculateRunStatus(double progressPercentageRealValue) {
-		RunStatus runStatus = null;
-		// TODO: think about algorithm how to calculate run status
-		runStatus = RunStatus.Running;
-		if (progressPercentageRealValue > 99.99) {
-			runStatus = RunStatus.Ended;
-		}
-		return runStatus.name();
-	}
-
 
 }
