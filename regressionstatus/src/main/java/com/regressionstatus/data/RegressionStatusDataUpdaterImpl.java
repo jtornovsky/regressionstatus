@@ -66,9 +66,8 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 
 	@Override
 	public void fetchStatusData() {
-		for (StatusTableField statusTableField : StatusTableField.values()) {
-			singleSetupCurrentStatusMap.put(statusTableField, "");
-		}
+
+//		singleSetupCurrentStatusMap = initStatusFieldMap();
 		backUpOldDataAndClearOverallSetupsCurrentStatusMap();
 		
 		for (String remoteStationIpaddress : remoteStationsIpaddresses.split(MULTI_VALUES_PROPERTY_SEPARATOR)) {
@@ -88,6 +87,13 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 	private Map<StatusTableField, String> calculateValuesForSingleStationStatus(Map<ReportField, String> reportData) {
 		
 		Map<StatusTableField, String> statusMap = new HashMap<>();
+		statusMap = initStatusFieldMap();
+		
+		String saVersion = reportData.get(ReportField.SA_CORE_VERSION)+"-"+reportData.get(ReportField.SA_CORE_VERSION_BUILD);
+		String runType = reportData.get(ReportField.SCENARIO).substring(reportData.get(ReportField.SCENARIO).indexOf('-')+1);
+		
+		statusMap.put(StatusTableField.SA_VERSION, saVersion);
+		statusMap.put(StatusTableField.RUN_TYPE, runType);
 		
 		String totalTestsInRunInStringFormat = reportData.get(ReportField.TOTAL_ENABLED_TESTS);
 		if (totalTestsInRunInStringFormat == null) {
@@ -107,13 +113,18 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 			return statusMap;
 		}
 		
-		String saVersion = reportData.get(ReportField.SA_CORE_VERSION)+"-"+reportData.get(ReportField.SA_CORE_VERSION_BUILD);
-		String runType = reportData.get(ReportField.SCENARIO).substring(reportData.get(ReportField.SCENARIO).indexOf('-')+1);
 		String passPercentage = reportData.get(ReportField.PASS_RATE) + "%";
 		String numberOfPassedTests = (numberOfTests - numberOfFails) + " out of " + reportData.get(ReportField.NUMBER_OF_TESTS);
 		double progressPercentageRealValue = (double)(numberOfTests) / totalTestsInRun*100;
 		String progressPercentage = String.format("%.2f", progressPercentageRealValue) + "%";
 		String runStatus = calculateRunStatus(progressPercentageRealValue);
+		
+		statusMap.put(StatusTableField.PASS_PERCENTAGE, passPercentage);
+		statusMap.put(StatusTableField.PASSED_TESTS_OUT_OF_RUN_TESTS, numberOfPassedTests);
+		statusMap.put(StatusTableField.PROGRESS_PERCENTAGE, progressPercentage);
+		statusMap.put(StatusTableField.TOTAL_TESTS_IN_RUN, totalTestsInRunInStringFormat);
+		statusMap.put(StatusTableField.RUN_STATUS, runStatus);
+		statusMap.put(StatusTableField.DETAILS, "no details");
 		
 		URL url = null;
 		try {
@@ -122,17 +133,7 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 			e.printStackTrace();
 			return statusMap;
 		}
-		
-		statusMap.put(StatusTableField.SA_VERSION, saVersion);
-		statusMap.put(StatusTableField.RUN_TYPE, runType);
-		statusMap.put(StatusTableField.PASS_PERCENTAGE, passPercentage);
-		statusMap.put(StatusTableField.PASSED_TESTS_OUT_OF_RUN_TESTS, numberOfPassedTests);
-		statusMap.put(StatusTableField.PROGRESS_PERCENTAGE, progressPercentage);
-		statusMap.put(StatusTableField.TOTAL_TESTS_IN_RUN, totalTestsInRunInStringFormat);
-		statusMap.put(StatusTableField.RUN_STATUS, runStatus);
 		statusMap.put(StatusTableField.URL, url.toString());
-		statusMap.put(StatusTableField.DETAILS, "no details");
-		
 		return statusMap;
 	}
 	

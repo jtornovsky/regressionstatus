@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 
+import com.regressionstatus.collectorandparser.ReportField;
+
 public abstract class AbstractRegressionStatusDataUpdater implements RegressionStatusDataUpdater {
 
 	@Resource(name="overallSetupsCurrentStatusMap")
@@ -35,6 +37,7 @@ public abstract class AbstractRegressionStatusDataUpdater implements RegressionS
 		
 		for (StatusTableField statusTableField : StatusTableField.values()) {
 			overallSetupsCurrentStatusMap.get(statusTableField).clear();
+//			overallSetupsCurrentStatusMap.get(statusTableField).add(VALUE_NOT_AVAILABLE);
 		}
 	}
 	
@@ -45,4 +48,12 @@ public abstract class AbstractRegressionStatusDataUpdater implements RegressionS
 		}
 	}
 	
+	protected Map<StatusTableField, String> initStatusFieldMap() {
+		
+		Map<StatusTableField, String> map = new HashMap<>();
+		for (StatusTableField statusTableField : StatusTableField.values()) {
+			map.put(statusTableField, VALUE_NOT_AVAILABLE);
+		}
+		return map;
+	}
 }

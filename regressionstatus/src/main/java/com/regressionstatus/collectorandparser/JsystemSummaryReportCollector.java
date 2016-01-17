@@ -20,32 +20,41 @@ import org.springframework.stereotype.Component;
 @Component("jsystemSummaryReportCollector")
 public class JsystemSummaryReportCollector implements DataCollector {
 
+	/**
+	 * brings the summary.html report from the remote machine to the local machine
+	 * @param remoteStationIpaddress - remote machine ip address
+	 * @param jsystemReportSourceFile - name of a report to fetch ('summary.html')
+	 * @param jsystemReportTargetFile - name of target file onto a local machine to be used to copy a remote report
+	 */
 	@Override
 	public void collectDataAtRemoteStation(String remoteStationIpaddress, String jsystemReportSourceFile, String jsystemReportTargetFile) {
 
 		URL jsystemSummaryReportUrl = null;
-		
+
 		// building url to copy summary.html report
 		try {
 			jsystemSummaryReportUrl = new URL("http://" + remoteStationIpaddress + "/" + jsystemReportSourceFile);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-		
+
 		// copying summary.html report from remote to local 
 		InputStream in = null;
 		try  {
 			in = jsystemSummaryReportUrl.openStream();
 			Path targetPath = Paths.get(jsystemReportTargetFile);
-		    Files.copy(in, targetPath, StandardCopyOption.REPLACE_EXISTING);
+			Files.copy(in, targetPath, StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			 // Close stream here
-			try {
-				in.close();
-			} catch (IOException e) {
-				e.printStackTrace();
+			// in case the stream was opened...
+			if (in != null) {
+				try {
+					// ...close stream here
+					in.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
