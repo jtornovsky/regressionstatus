@@ -30,10 +30,18 @@
 			<%
 				Map<CurrentStatusTableField, List<String>> resp = (Map<CurrentStatusTableField, List<String>>) request.getAttribute("dataMap");
 				int size = resp.get(CurrentStatusTableField.SA_VERSION).size();
+				String fieldToShow = null;
 				for (int i = 0; i < size; i++) {
 					out.println("<tr>");
 					for (CurrentStatusTableField status : resp.keySet()) {
-						out.println("<td>" + resp.get(status).get(i) + "</td>");
+						fieldToShow = resp.get(status).get(i);
+						if(status.equals(CurrentStatusTableField.URL)) {
+							fieldToShow = "<td><a href='" + resp.get(status).get(i) + "'>" + resp.get(status).get(i) + "</a></td>";
+						}
+						else {
+							fieldToShow = "<td>" + resp.get(status).get(i) + "</td>"; 
+						}
+						out.println(fieldToShow);
 					}
 					out.println("</tr>");
 				}
