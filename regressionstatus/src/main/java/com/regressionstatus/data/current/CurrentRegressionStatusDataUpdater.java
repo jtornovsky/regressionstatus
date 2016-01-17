@@ -1,4 +1,4 @@
-package com.regressionstatus.data;
+package com.regressionstatus.data.current;
 
 import java.util.List;
 import java.util.Map;
@@ -9,7 +9,7 @@ import java.util.Map;
  * @author jtornovsky
  *
  */
-public interface RegressionStatusDataUpdater {
+public interface CurrentRegressionStatusDataUpdater {
 	
 	public final String VALUE_NOT_AVAILABLE = "NA";
 	
@@ -20,8 +20,7 @@ public interface RegressionStatusDataUpdater {
 	public void fetchStatusData();
 	
 	/**
-	 * returns map with calculated data for final current report
-	 * @return
+	 * @return map with calculated data for final report of the current regression status 
 	 */
-	public Map<StatusTableField, List<String>> getOverallSetupsCurrentStatusMap();
+	public Map<CurrentStatusTableField, List<String>> getOverallSetupsCurrentStatusMap();
 }

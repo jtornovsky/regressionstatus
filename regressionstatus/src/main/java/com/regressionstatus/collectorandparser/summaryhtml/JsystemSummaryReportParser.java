@@ -1,4 +1,4 @@
-package com.regressionstatus.collectorandparser;
+package com.regressionstatus.collectorandparser.summaryhtml;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -20,13 +20,15 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.regressionstatus.collectorandparser.DataParser;
+
 @Component("jsystemSummaryReportParser")
 public class JsystemSummaryReportParser implements DataParser {
 
 	@Override
-	public Map<ReportField, String> parseAutomationReport(String reportTargetLocation) {
+	public Map<JsystemSummaryReportField, String> parseAutomationReport(String reportTargetLocation) {
 
-		Map<ReportField, String> automationReport = new HashMap<>();
+		Map<JsystemSummaryReportField, String> automationReport = new HashMap<>();
 		
 		try {
 			automationReport = getDataFromSummaryFile(reportTargetLocation);				
@@ -42,7 +44,7 @@ public class JsystemSummaryReportParser implements DataParser {
 	 * @return
 	 * @throws Exception
 	 */
-	private Map<ReportField, String> getDataFromSummaryFile(String htmlFile) throws Exception {
+	private Map<JsystemSummaryReportField, String> getDataFromSummaryFile(String htmlFile) throws Exception {
 
 		String formattedHtmlFile = formatHtmlFile(htmlFile);
 		File fHtmlFile = new File(formattedHtmlFile); 
@@ -52,7 +54,7 @@ public class JsystemSummaryReportParser implements DataParser {
 		Document doc = dBuilder.parse(fHtmlFile);
 		doc.getDocumentElement().normalize();
 		NodeList list = doc.getElementsByTagName("tr");
-		Map<ReportField,String> summaryValues = new HashMap<>();
+		Map<JsystemSummaryReportField,String> summaryValues = new HashMap<>();
 		
 		if (list != null && list.getLength() > 0) {
 			NodeList tdList;
@@ -65,7 +67,7 @@ public class JsystemSummaryReportParser implements DataParser {
 				tdList = tr.getChildNodes();
 				if(tdList.getLength() == 2) { // taking field with only 2 elements
 					fieldId = tdList.item(0).getTextContent();
-					ReportField reportKey = ReportField.getEnumByString(fieldId);
+					JsystemSummaryReportField reportKey = JsystemSummaryReportField.getEnumByString(fieldId);
 					if (reportKey != null) {
 						fieldValue = tdList.item(1).getTextContent();
 						summaryValues.put(reportKey, fieldValue);

@@ -1,4 +1,4 @@
-package com.regressionstatus.collectorandparser;
+package com.regressionstatus.collectorandparser.summaryhtml;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +10,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 import org.springframework.stereotype.Component;
+
+import com.regressionstatus.collectorandparser.DataCollector;
 
 /**
  * Class used to copy jsystem's summary.html report from the remote machine that runs one of regression scenario 

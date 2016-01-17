@@ -1,6 +1,11 @@
-package com.regressionstatus.data;
+package com.regressionstatus.data.current;
 
-public enum StatusTableField {
+/**
+ * Enum denotes fields in the final report of a current regression status
+ * @author jtornovsky
+ *
+ */
+public enum CurrentStatusTableField {
 
 	SA_VERSION("SA Version"),
 	RUN_TYPE("Run Type"),
@@ -14,7 +19,7 @@ public enum StatusTableField {
 	
 	private final String field;
 
-	private StatusTableField(String field) {
+	private CurrentStatusTableField(String field) {
 		this.field = field;
 	}
 	

@@ -1,4 +1,4 @@
-package com.regressionstatus.data;
+package com.regressionstatus.data.current.summaryhtml;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,15 +16,22 @@ import org.springframework.stereotype.Component;
 
 import com.regressionstatus.collectorandparser.DataCollector;
 import com.regressionstatus.collectorandparser.DataParser;
-import com.regressionstatus.collectorandparser.ReportField;
+import com.regressionstatus.collectorandparser.summaryhtml.JsystemSummaryReportField;
+import com.regressionstatus.data.current.CurrentStatusTableField;
 
-@Component("regressionStatusDataUpdaterImpl")
-public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDataUpdater {
+/**
+ * Class holds functionality to retrieve and calculate current regression status 
+ * based on data found in summary.html report of jsystem
+ * @author jtornovsky
+ *
+ */
+@Component("currentRegressionStatusDataUpdaterSummaryReport")
+public class CurrentRegressionStatusDataUpdaterSummaryReport extends AbstractCurrentRegressionStatusDataUpdaterSummaryReport {
 	
 	private final String MULTI_VALUES_PROPERTY_SEPARATOR = ",";
 	
 	@Resource(name="singleSetupCurrentStatusMap")
-	private Map<StatusTableField, String> singleSetupCurrentStatusMap;
+	private Map<CurrentStatusTableField, String> singleSetupCurrentStatusMap;
 	
 	@Value("${remote.station.property.ipdresses}")
 	private String remoteStationsIpaddresses;
@@ -44,21 +51,21 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 	private DataParser dataParser;
 	
 	@Resource(name="parsedAutomationReport")
-	private Map<ReportField, String> parsedAutomationReport;	// to hold parsed report to calculate and fill singleSetupCurrentStatusMap
+	private Map<JsystemSummaryReportField, String> parsedAutomationReport;	// to hold parsed report to calculate and fill singleSetupCurrentStatusMap
 	
 	@Bean(name="singleSetupCurrentStatusMap")
-	public Map<StatusTableField, String> initSingleSetupCurrentStatusMap() {
-		Map<StatusTableField, String> localSingleSetupsCurrentStatusMap = new HashMap<>();
-		for (StatusTableField statusTableField : StatusTableField.values()) {
+	public Map<CurrentStatusTableField, String> initSingleSetupCurrentStatusMap() {
+		Map<CurrentStatusTableField, String> localSingleSetupsCurrentStatusMap = new HashMap<>();
+		for (CurrentStatusTableField statusTableField : CurrentStatusTableField.values()) {
 			localSingleSetupsCurrentStatusMap.put(statusTableField, "");
 		}
 		return localSingleSetupsCurrentStatusMap;
 	}
 	
 	@Bean(name = "parsedAutomationReport")
-	public Map<ReportField, String> initParsedAutomationReportMap() {
-		Map<ReportField, String> pAutoReportMap = new HashMap<>();
-		for (ReportField reportField : ReportField.values()) {
+	public Map<JsystemSummaryReportField, String> initParsedAutomationReportMap() {
+		Map<JsystemSummaryReportField, String> pAutoReportMap = new HashMap<>();
+		for (JsystemSummaryReportField reportField : JsystemSummaryReportField.values()) {
 			pAutoReportMap.put(reportField, "");
 		}
 		return pAutoReportMap;
@@ -67,7 +74,6 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 	@Override
 	public void fetchStatusData() {
 
-//		singleSetupCurrentStatusMap = initStatusFieldMap();
 		backUpOldDataAndClearOverallSetupsCurrentStatusMap();
 		
 		for (String remoteStationIpaddress : remoteStationsIpaddresses.split(MULTI_VALUES_PROPERTY_SEPARATOR)) {
@@ -84,21 +90,20 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 	/**
 	 * calculating values of a gathered data
 	 */
-	private Map<StatusTableField, String> calculateValuesForSingleStationStatus(Map<ReportField, String> reportData) {
+	private Map<CurrentStatusTableField, String> calculateValuesForSingleStationStatus(Map<JsystemSummaryReportField, String> reportData) {
 		
-		Map<StatusTableField, String> statusMap = new HashMap<>();
-		statusMap = initStatusFieldMap();
+		Map<CurrentStatusTableField, String> statusMap = initStatusFieldMap();
 		
-		String saVersion = reportData.get(ReportField.SA_CORE_VERSION)+"-"+reportData.get(ReportField.SA_CORE_VERSION_BUILD);
-		String runType = reportData.get(ReportField.SCENARIO).substring(reportData.get(ReportField.SCENARIO).indexOf('-')+1);
-		String totalTestsInRunInStringFormat = reportData.get(ReportField.TOTAL_ENABLED_TESTS);
+		String saVersion = reportData.get(JsystemSummaryReportField.SA_CORE_VERSION)+"-"+reportData.get(JsystemSummaryReportField.SA_CORE_VERSION_BUILD);
+		String runType = reportData.get(JsystemSummaryReportField.SCENARIO).substring(reportData.get(JsystemSummaryReportField.SCENARIO).indexOf('-')+1);
+		String totalTestsInRunInStringFormat = reportData.get(JsystemSummaryReportField.TOTAL_ENABLED_TESTS);
 		if (totalTestsInRunInStringFormat == null) {
-			totalTestsInRunInStringFormat = reportData.get(ReportField.TESTS_IN_RUN);
+			totalTestsInRunInStringFormat = reportData.get(JsystemSummaryReportField.TESTS_IN_RUN);
 		}
 		
 		if (saVersion != null && runType != null && totalTestsInRunInStringFormat != null) {
-			statusMap.put(StatusTableField.SA_VERSION, saVersion);
-			statusMap.put(StatusTableField.RUN_TYPE, runType);
+			statusMap.put(CurrentStatusTableField.SA_VERSION, saVersion);
+			statusMap.put(CurrentStatusTableField.RUN_TYPE, runType);
 		} else {
 			return statusMap;
 		}
@@ -108,35 +113,35 @@ public class RegressionStatusDataUpdaterImpl extends AbstractRegressionStatusDat
 		double totalTestsInRun = 0;
 		
 		try {
-			numberOfTests = Integer.parseInt(reportData.get(ReportField.NUMBER_OF_TESTS));
-			numberOfFails = Integer.parseInt(reportData.get(ReportField.NUMBER_OF_FAILS));
+			numberOfTests = Integer.parseInt(reportData.get(JsystemSummaryReportField.NUMBER_OF_TESTS));
+			numberOfFails = Integer.parseInt(reportData.get(JsystemSummaryReportField.NUMBER_OF_FAILS));
 			totalTestsInRun = Double.parseDouble(totalTestsInRunInStringFormat);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return statusMap;
 		}
 		
-		String passPercentage = reportData.get(ReportField.PASS_RATE) + "%";
-		String numberOfPassedTests = (numberOfTests - numberOfFails) + " out of " + reportData.get(ReportField.NUMBER_OF_TESTS);
+		String passPercentage = reportData.get(JsystemSummaryReportField.PASS_RATE) + "%";
+		String numberOfPassedTests = (numberOfTests - numberOfFails) + " out of " + reportData.get(JsystemSummaryReportField.NUMBER_OF_TESTS);
 		double progressPercentageRealValue = (double)(numberOfTests) / totalTestsInRun*100;
 		String progressPercentage = String.format("%.2f", progressPercentageRealValue) + "%";
 		String runStatus = calculateRunStatus(progressPercentageRealValue);
 		
-		statusMap.put(StatusTableField.PASS_PERCENTAGE, passPercentage);
-		statusMap.put(StatusTableField.PASSED_TESTS_OUT_OF_RUN_TESTS, numberOfPassedTests);
-		statusMap.put(StatusTableField.PROGRESS_PERCENTAGE, progressPercentage);
-		statusMap.put(StatusTableField.TOTAL_TESTS_IN_RUN, totalTestsInRunInStringFormat);
-		statusMap.put(StatusTableField.RUN_STATUS, runStatus);
-		statusMap.put(StatusTableField.DETAILS, "no details");
+		statusMap.put(CurrentStatusTableField.PASS_PERCENTAGE, passPercentage);
+		statusMap.put(CurrentStatusTableField.PASSED_TESTS_OUT_OF_RUN_TESTS, numberOfPassedTests);
+		statusMap.put(CurrentStatusTableField.PROGRESS_PERCENTAGE, progressPercentage);
+		statusMap.put(CurrentStatusTableField.TOTAL_TESTS_IN_RUN, totalTestsInRunInStringFormat);
+		statusMap.put(CurrentStatusTableField.RUN_STATUS, runStatus);
+		statusMap.put(CurrentStatusTableField.DETAILS, "no details");
 		
 		URL url = null;
 		try {
-			url = new URL("http://"+reportData.get(ReportField.STATION));
+			url = new URL("http://"+reportData.get(JsystemSummaryReportField.STATION));
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 			return statusMap;
 		}
-		statusMap.put(StatusTableField.URL, url.toString());
+		statusMap.put(CurrentStatusTableField.URL, url.toString());
 		return statusMap;
 	}
 	
