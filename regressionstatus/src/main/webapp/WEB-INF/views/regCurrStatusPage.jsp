@@ -1,6 +1,7 @@
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map"%>
 <%@page import="com.regressionstatus.data.current.CurrentStatusTableField"%>
+<%@page import="com.regressionstatus.data.current.CurrentRegressionStatusDataUpdater"%>
 <%@page language="java" contentType="text/html; charset=windows-1255" pageEncoding="windows-1255"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -37,10 +38,12 @@
 						fieldToShow = resp.get(status).get(i);
 						switch(status) {
 						case URL:
-							fieldToShow = "<td><a href='" + resp.get(status).get(i) + "'>" + resp.get(status).get(i) + "</a></td>";
-							break;
+							if (!fieldToShow.toString().equals(CurrentRegressionStatusDataUpdater.VALUE_NOT_AVAILABLE)) {
+								fieldToShow = "<td><a href='" + fieldToShow + "'>" + fieldToShow + "</a></td>";
+								break;
+							}
 						default:
-							fieldToShow = "<td>" + resp.get(status).get(i) + "</td>"; 
+							fieldToShow = "<td>" + fieldToShow + "</td>"; 
 						}
 						out.println(fieldToShow);
 					}

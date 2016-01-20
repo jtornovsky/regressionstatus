@@ -8,11 +8,8 @@ package com.regressionstatus.data.current.runstatus;
 public enum RunStatus {
 	
 	RUNNING("Running"),
-	SUSPICIOUS("Suspicious"), // in case of no progress in run for a long time
 	NOT_RUNNING("Not running"),
-	ENDED("Ended"),
-	RERUN("Rerun"),
-	STOPPED("Stopped");
+	ENDED("Ended");
 	
 	private final String runStatus;
 	

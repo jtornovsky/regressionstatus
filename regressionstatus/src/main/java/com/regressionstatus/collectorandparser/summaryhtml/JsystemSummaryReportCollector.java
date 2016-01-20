@@ -1,5 +1,6 @@
 package com.regressionstatus.collectorandparser.summaryhtml;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -29,16 +30,14 @@ public class JsystemSummaryReportCollector implements DataCollector {
 	 * @param jsystemReportTargetFile - name of target file onto a local machine to be used to copy a remote report
 	 */
 	@Override
-	public void collectDataAtRemoteStation(String remoteStationIpaddress, String jsystemReportSourceFile, String jsystemReportTargetFile) {
+	public void collectDataAtRemoteStation(String remoteStationIpaddress, String jsystemReportSourceFile, String jsystemReportTargetFile) throws Exception {
 
 		URL jsystemSummaryReportUrl = null;
+		
+		deleteOldReportFile(jsystemReportTargetFile);
 
 		// building url to copy summary.html report
-		try {
-			jsystemSummaryReportUrl = new URL("http://" + remoteStationIpaddress + "/" + jsystemReportSourceFile);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
+		jsystemSummaryReportUrl = new URL("http://" + remoteStationIpaddress + "/" + jsystemReportSourceFile);
 
 		// copying summary.html report from remote to local 
 		InputStream in = null;
@@ -59,5 +58,14 @@ public class JsystemSummaryReportCollector implements DataCollector {
 				}
 			}
 		}
+	}
+	
+	private void deleteOldReportFile(String fileName) throws Exception {
+		
+		File file = new File(fileName);
+		if(!file.delete()) {
+			System.out.println("Delete operation is failed.");
+		}
+
 	}
 }

@@ -28,7 +28,7 @@ public class JsystemSummaryReportParser implements DataParser {
 	@Override
 	public Map<JsystemSummaryReportField, String> parseAutomationReport(String reportTargetLocation) {
 
-		Map<JsystemSummaryReportField, String> automationReport = new HashMap<>();
+		Map<JsystemSummaryReportField, String> automationReport = null;
 		
 		try {
 			automationReport = getDataFromSummaryFile(reportTargetLocation);				
@@ -85,7 +85,7 @@ public class JsystemSummaryReportParser implements DataParser {
 	 * @return
 	 * @throws IOException
 	 */
-	private String  formatHtmlFile(String htmlFile) throws IOException   {
+	private String formatHtmlFile(String htmlFile) throws IOException   {
 
 		List<String> lines = new ArrayList<String>();
 		String line = null;

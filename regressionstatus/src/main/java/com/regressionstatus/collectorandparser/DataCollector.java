@@ -2,5 +2,5 @@ package com.regressionstatus.collectorandparser;
 
 public interface DataCollector {
 
-	public void collectDataAtRemoteStation(String remoteStationIpaddress, String remoteStationReportSourceFile, String localStationReportTargetFile);
+	public void collectDataAtRemoteStation(String remoteStationIpaddress, String remoteStationReportSourceFile, String localStationReportTargetFile) throws Exception;
 }
