@@ -22,9 +22,18 @@ import org.w3c.dom.NodeList;
 
 import com.regressionstatus.collectorandparser.DataParser;
 
+/**
+ * Class parses jsystem summary.html
+ * parsed data populated and returned as an hash map 
+ * @author jtornovsky
+ *
+ */
 @Component("jsystemSummaryReportParser")
 public class JsystemSummaryReportParser implements DataParser {
 
+	/**
+	 * parses jsystem summary.html report to an hash map 
+	 */
 	@Override
 	public Map<JsystemSummaryReportField, String> parseAutomationReport(String reportTargetLocation) {
 
@@ -77,7 +86,6 @@ public class JsystemSummaryReportParser implements DataParser {
 		}
 		return summaryValues;
 	}
-		
 
 	/**
 	 * reformats the raw html report to get rid from the unparsable characters
@@ -115,7 +123,6 @@ public class JsystemSummaryReportParser implements DataParser {
 		
 		return reformattedHtmlFile;
 	}
-	
 }
 
 

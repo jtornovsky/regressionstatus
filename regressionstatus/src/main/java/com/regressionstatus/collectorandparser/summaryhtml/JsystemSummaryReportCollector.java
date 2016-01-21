@@ -60,6 +60,11 @@ public class JsystemSummaryReportCollector implements DataCollector {
 		}
 	}
 	
+	/**
+	 * deletes previously fetched summary.html file
+	 * @param fileName
+	 * @throws Exception
+	 */
 	private void deleteOldReportFile(String fileName) throws Exception {
 		
 		File file = new File(fileName);
