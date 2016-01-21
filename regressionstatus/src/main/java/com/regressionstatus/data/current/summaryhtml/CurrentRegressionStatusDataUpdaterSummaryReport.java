@@ -127,31 +127,31 @@ public class CurrentRegressionStatusDataUpdaterSummaryReport extends AbstractCur
 			return statusMap;	// if values above are null, no sense to do further calculations, returning map as it is 
 		}
 		
-		int numberOfTests = 0;
-		int numberOfFails = 0;
+		double numberOfTests = 0;
+		double numberOfFails = 0;
 		double totalTestsInRun = 0;
 		
 		try {
-			numberOfTests = Integer.parseInt(reportData.get(JsystemSummaryReportField.NUMBER_OF_TESTS));
-			numberOfFails = Integer.parseInt(reportData.get(JsystemSummaryReportField.NUMBER_OF_FAILS));
+			numberOfTests = Double.parseDouble(reportData.get(JsystemSummaryReportField.NUMBER_OF_TESTS));
+			numberOfFails = Double.parseDouble(reportData.get(JsystemSummaryReportField.NUMBER_OF_FAILS));
 			totalTestsInRun = Double.parseDouble(totalTestsInRunInStringFormat);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return statusMap;	// if values above are null, no sense to do further calculations, returning map as it is
 		}
 		
-		String passPercentage = reportData.get(JsystemSummaryReportField.PASS_RATE) + "%";
-		String numberOfPassedTests = (numberOfTests - numberOfFails) + " out of " + reportData.get(JsystemSummaryReportField.NUMBER_OF_TESTS);
-		double progressPercentageRealValue = (double)(numberOfTests) / totalTestsInRun*100;
-		String progressPercentage = String.format("%.2f", progressPercentageRealValue) + "%";
+//		String passPercentage = reportData.get(JsystemSummaryReportField.PASS_RATE) + "%";	commented out as a value not calculated well by jsystem
+		int numberOfPassedTests = (int) (numberOfTests - numberOfFails);
+		double passPercentage = numberOfPassedTests/numberOfTests*100;
+		double progressPercentageRealValue = numberOfTests/totalTestsInRun*100;
 		String runStatus = runStatusGeneralCalculator.calculateRunStatus(progressPercentageRealValue).toString();
 		
-		statusMap.put(CurrentStatusTableField.PASS_PERCENTAGE, passPercentage);
-		statusMap.put(CurrentStatusTableField.PASSED_TESTS_OUT_OF_RUN_TESTS, numberOfPassedTests);
-		statusMap.put(CurrentStatusTableField.PROGRESS_PERCENTAGE, progressPercentage);
+		statusMap.put(CurrentStatusTableField.PASS_PERCENTAGE, String.format("%.2f", passPercentage) + "%");
+		statusMap.put(CurrentStatusTableField.PASSED_TESTS_OUT_OF_RUN_TESTS, numberOfPassedTests + " out of " + reportData.get(JsystemSummaryReportField.NUMBER_OF_TESTS));
+		statusMap.put(CurrentStatusTableField.PROGRESS_PERCENTAGE, String.format("%.2f", progressPercentageRealValue) + "%");
 		statusMap.put(CurrentStatusTableField.TOTAL_TESTS_IN_RUN, totalTestsInRunInStringFormat);
 		statusMap.put(CurrentStatusTableField.RUN_STATUS, runStatus);
-//		statusMap.put(CurrentStatusTableField.COMMENTS, "no details");
+//		statusMap.put(CurrentStatusTableField.COMMENTS, "no details");	// the column temporary disabled
 		
 		URL url = null;
 		try {
