@@ -20,33 +20,39 @@ import com.regressionstatus.collectorandparser.DataCollector;
  * @author jtornovsky
  *
  */
-@Component("jsystemSummaryReportCollector")
-public class JsystemSummaryReportCollector implements DataCollector {
+@Component("jsystemSummaryHtmlReportCollector")
+public class JsystemSummaryHtmlReportCollector implements DataCollector {
+	
+	final String FILE_EXTENSION = ".html";
 
 	/**
 	 * brings the summary.html report from the remote machine to the local machine
 	 * @param remoteStationIpaddress - remote machine ip address
-	 * @param jsystemReportSourceFile - name of a report to fetch ('summary.html')
+	 * @param jsystemReportSourceFile - name of a report to fetch ('summary') + .html
 	 * @param jsystemReportTargetFile - name of target file onto a local machine to be used to copy a remote report
 	 */
 	@Override
-	public void collectDataAtRemoteStation(String remoteStationIpaddress, String jsystemReportSourceFile, String jsystemReportTargetFile) throws Exception {
+	public String collectDataAtRemoteStation(String remoteStationIpaddress, String jsystemReportSourceFile, String jsystemReportTargetFile) throws Exception {
 
 		URL jsystemSummaryReportUrl = null;
 		
-		deleteOldReportFile(jsystemReportTargetFile);
+		String targetFile = jsystemReportTargetFile + FILE_EXTENSION;
+		String sourceFile = jsystemReportSourceFile + FILE_EXTENSION;
+		
+		deleteOldReportFile(targetFile);
 
 		// building url to copy summary.html report
-		jsystemSummaryReportUrl = new URL("http://" + remoteStationIpaddress + "/" + jsystemReportSourceFile);
+		jsystemSummaryReportUrl = new URL("http://" + remoteStationIpaddress + "/" + sourceFile);
 
 		// copying summary.html report from remote to local 
 		InputStream in = null;
 		try  {
 			in = jsystemSummaryReportUrl.openStream();
-			Path targetPath = Paths.get(jsystemReportTargetFile);
+			Path targetPath = Paths.get(targetFile);
 			Files.copy(in, targetPath, StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
 			e.printStackTrace();
+			targetFile = null;
 		} finally {
 			// in case the stream was opened...
 			if (in != null) {
@@ -55,9 +61,11 @@ public class JsystemSummaryReportCollector implements DataCollector {
 					in.close();
 				} catch (IOException e) {
 					e.printStackTrace();
+					return null;
 				}
 			}
 		}
+		return targetFile;
 	}
 	
 	/**
@@ -69,7 +77,7 @@ public class JsystemSummaryReportCollector implements DataCollector {
 		
 		File file = new File(fileName);
 		if(!file.delete()) {
-			System.out.println("Delete operation is failed.");
+			System.out.println("Failed to delete: " + fileName);
 		}
 
 	}

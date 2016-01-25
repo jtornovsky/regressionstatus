@@ -1,11 +1,13 @@
 package com.regressionstatus.collectorandparser.summaryhtml;
 
+import com.regressionstatus.collectorandparser.SummaryReportField;
+
 /**
  * Denotes the fields in jsystem report - summary.html 
  * @author jtornovsky
  *
  */
-public enum JsystemSummaryReportField {
+public enum JsystemSummaryHtmlReportField implements SummaryReportField {
 
 	NUMBER_OF_TESTS("Number of tests"),	
 	NUMBER_OF_FAILS("Number of fails"),
@@ -30,7 +32,7 @@ public enum JsystemSummaryReportField {
 	
 	private final String field;
 
-	private JsystemSummaryReportField(String field) {
+	private JsystemSummaryHtmlReportField(String field) {
 		this.field = field;
 	}
 	
@@ -39,9 +41,9 @@ public enum JsystemSummaryReportField {
 		return field;
 	}
 	
-	public static JsystemSummaryReportField getEnumByString(String enumStringValue) {
-		JsystemSummaryReportField enumValue = null;
-		for (JsystemSummaryReportField value : JsystemSummaryReportField.values()) {
+	public static JsystemSummaryHtmlReportField getEnumByString(String enumStringValue) {
+		JsystemSummaryHtmlReportField enumValue = null;
+		for (JsystemSummaryHtmlReportField value : JsystemSummaryHtmlReportField.values()) {
 			if (value.toString().equalsIgnoreCase(enumStringValue)) {
 				enumValue = value;
 			}

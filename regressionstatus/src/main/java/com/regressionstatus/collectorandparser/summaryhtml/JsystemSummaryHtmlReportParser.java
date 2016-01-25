@@ -21,6 +21,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.regressionstatus.collectorandparser.DataParser;
+import com.regressionstatus.collectorandparser.SummaryReportField;
+import com.regressionstatus.collectorandparser.summaryjson.JsystemSummaryJsonReportField;
 
 /**
  * Class parses jsystem summary.html
@@ -28,16 +30,16 @@ import com.regressionstatus.collectorandparser.DataParser;
  * @author jtornovsky
  *
  */
-@Component("jsystemSummaryReportParser")
-public class JsystemSummaryReportParser implements DataParser {
+@Component("jsystemSummaryHtmlReportParser")
+public class JsystemSummaryHtmlReportParser implements DataParser {
 
 	/**
 	 * parses jsystem summary.html report to an hash map 
 	 */
 	@Override
-	public Map<JsystemSummaryReportField, String> parseAutomationReport(String reportTargetLocation) {
+	public Map<SummaryReportField, String> parseAutomationReport(String reportTargetLocation) {
 
-		Map<JsystemSummaryReportField, String> automationReport = null;
+		Map<SummaryReportField, String> automationReport = null;
 		
 		try {
 			automationReport = getDataFromSummaryFile(reportTargetLocation);				
@@ -53,7 +55,7 @@ public class JsystemSummaryReportParser implements DataParser {
 	 * @return
 	 * @throws Exception
 	 */
-	private Map<JsystemSummaryReportField, String> getDataFromSummaryFile(String htmlFile) throws Exception {
+	private Map<SummaryReportField, String> getDataFromSummaryFile(String htmlFile) throws Exception {
 
 		String formattedHtmlFile = formatHtmlFile(htmlFile);
 		File fHtmlFile = new File(formattedHtmlFile); 
@@ -63,7 +65,7 @@ public class JsystemSummaryReportParser implements DataParser {
 		Document doc = dBuilder.parse(fHtmlFile);
 		doc.getDocumentElement().normalize();
 		NodeList list = doc.getElementsByTagName("tr");
-		Map<JsystemSummaryReportField,String> summaryValues = new HashMap<>();
+		Map<SummaryReportField,String> summaryValues = new HashMap<>();
 		
 		if (list != null && list.getLength() > 0) {
 			NodeList tdList;
@@ -76,7 +78,7 @@ public class JsystemSummaryReportParser implements DataParser {
 				tdList = tr.getChildNodes();
 				if(tdList.getLength() == 2) { // taking field with only 2 elements
 					fieldId = tdList.item(0).getTextContent();
-					JsystemSummaryReportField reportKey = JsystemSummaryReportField.getEnumByString(fieldId);
+					JsystemSummaryHtmlReportField reportKey = JsystemSummaryHtmlReportField.getEnumByString(fieldId);
 					if (reportKey != null) {
 						fieldValue = tdList.item(1).getTextContent();
 						summaryValues.put(reportKey, fieldValue);

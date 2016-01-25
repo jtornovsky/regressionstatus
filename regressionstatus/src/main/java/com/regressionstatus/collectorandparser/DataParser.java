@@ -2,7 +2,7 @@ package com.regressionstatus.collectorandparser;
 
 import java.util.Map;
 
-import com.regressionstatus.collectorandparser.summaryhtml.JsystemSummaryReportField;
+import com.regressionstatus.collectorandparser.summaryhtml.JsystemSummaryHtmlReportField;
 
 /**
  * Interface responsible to parse report file taken from jsystem 
@@ -17,6 +17,6 @@ public interface DataParser {
 	 * @param reportTargetLocation fetched report file in xml or json format with its location
 	 * @return hash map with a parsed data
 	 */
-	public Map<JsystemSummaryReportField, String> parseAutomationReport(String reportTargetLocation);
+	public Map<SummaryReportField, String> parseAutomationReport(String reportTargetLocation);
 	// TODO change JsystemSummaryReportField in a map to some general ENUM, like this Enum<?> 
 }
