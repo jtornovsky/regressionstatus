@@ -12,8 +12,6 @@ import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 
 import com.regressionstatus.collectorandparser.DataCollector;
@@ -24,10 +22,10 @@ import com.regressionstatus.data.current.runstatus.RunStatusCalculator;
 public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport implements CurrentRegressionStatusDataUpdater {
 
 	@Resource(name="overallSetupsCurrentStatusMap")
-	protected Map<CurrentStatusTableField, List<String>> overallSetupsCurrentStatusMap;
+	private Map<CurrentStatusTableField, List<String>> overallSetupsCurrentStatusMap;
 	
 	@Resource(name="singleSetupCurrentStatusMap")
-	protected Map<CurrentStatusTableField, String> singleSetupCurrentStatusMap;
+	private Map<CurrentStatusTableField, String> singleSetupCurrentStatusMap;
 	
 	protected final String MULTI_VALUES_PROPERTY_SEPARATOR = ",";
 	

@@ -48,7 +48,7 @@ public class RegressionCurrentStatusController {
 	 * holds the instance of a an data updater to be used to calculate status report for all regression setups 
 	 */
 	@Autowired
-	@Qualifier("currentRegressionStatusDataUpdaterSummaryReport")
+	@Qualifier("currentRegressionStatusDataUpdaterSummaryHtmlReport")
 	CurrentRegressionStatusDataUpdater regressionStatusUpdater;
 
 	/**

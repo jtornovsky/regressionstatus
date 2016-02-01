@@ -1,4 +1,4 @@
-package com.regressionstatus.collectorandparser.summaryhtml;
+package com.regressionstatus.collectorandparser.summaryjson;
 
 import org.springframework.stereotype.Component;
 
@@ -10,20 +10,20 @@ import com.regressionstatus.collectorandparser.AbstractDataCollector;
  * @author jtornovsky
  *
  */
-@Component("jsystemSummaryHtmlReportCollector")
-public class JsystemSummaryHtmlReportCollector extends AbstractDataCollector {
+@Component("jsystemSummaryJsonReportCollector")
+public class JsystemSummaryJsonReportCollector extends AbstractDataCollector {
 	
-	final String FILE_EXTENSION = ".html";
+	final String FILE_EXTENSION = ".json";
 
 	/**
-	 * brings the summary.html report from the remote machine to the local machine
+	 * brings the summary.json report from the remote machine to the local machine
 	 * @param remoteStationIpaddress - remote machine ip address
-	 * @param jsystemReportSourceFile - name of a report to fetch ('summary') + .html
+	 * @param jsystemReportSourceFile - name of a report to fetch ('summary') + .json
 	 * @param jsystemReportTargetFile - name of target file onto a local machine to be used to copy a remote report
 	 */
 	@Override
 	public String collectDataAtRemoteStation(String remoteStationIpaddress, String jsystemReportSourceFile, String jsystemReportTargetFile) throws Exception {
-
+	
 		return copySummaryFileFromRemoteToLocal(remoteStationIpaddress, jsystemReportSourceFile, jsystemReportTargetFile, FILE_EXTENSION);
 	}
 }
