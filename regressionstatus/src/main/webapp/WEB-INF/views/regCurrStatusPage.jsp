@@ -8,8 +8,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type"	content="text/html; charset=windows-1255">
-<link rel="icon" type="image/png" href="images/favicon.png">
 <title>${statusPageTitle}</title>
+<!-- <img src="/regressionstatus/images/favicon.png" /></br> -->
+<link rel="shortcut icon" type="image/png" href="/regressionstatus/images/favicon.png">
 </head>
 <body>
 	<%

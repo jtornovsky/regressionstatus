@@ -1,8 +1,8 @@
 package com.regressionstatus.controller;
 
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +26,7 @@ import com.regressionstatus.data.current.CurrentRegressionStatusDataUpdater;
 public class RegressionCurrentStatusController {
 
 	// logger still not in use
-	private final static Log logger = LogFactory.getLog(RegressionCurrentStatusController.class);
+//	private final static Log logger = LogFactory.getLog(RegressionCurrentStatusController.class);
 	
 	/**
 	 * holds the title of a status page

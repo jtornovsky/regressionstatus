@@ -1,9 +1,8 @@
 package com.regressionstatus.data.current.summaryhtml;
 
-import java.util.Map;
-
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -97,3 +96,4 @@ public class CurrentRegressionStatusDataUpdaterSummaryHtmlReport extends Abstrac
 		return statusMap;
 	}
 }
+

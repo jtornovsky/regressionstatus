@@ -6,7 +6,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1255">
 <title>Tomcat Tester</title>
 <img src="images/favicon.png" />
-<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="shortcut icon" type="image/png" href="images/favicon.png">
+<!-- <img src="https://ssl.gstatic.com/ui/v1/icons/mail/images/favicon5.ico" /> -->
+<!-- <link rel="shortcut icon" href="https://ssl.gstatic.com/ui/v1/icons/mail/images/favicon5.ico" type="image/x-icon"> -->
 </head>
 <body>
 	<h1>Tomcat is up and running</h1>

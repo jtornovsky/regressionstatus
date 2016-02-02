@@ -12,10 +12,12 @@ public class RunStatusGeneralCalculator implements RunStatusCalculator {
 	private double prevProgressPercentageRealValue = 0.0001;
 	private long prevTimeStamp = -1;
 
+	@Override
 	public RunStatus calculateRunStatus(double progressPercentageRealValue) {
 		
 		RunStatus runStatus = null;
 		long currentTimeStamp = System.currentTimeMillis()/1000;
+		
 
 		// TODO: think about algorithm how to calculate run status
 		runStatus = RunStatus.RUNNING;

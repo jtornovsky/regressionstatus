@@ -2,8 +2,6 @@ package com.regressionstatus.collectorandparser;
 
 import java.util.Map;
 
-import com.regressionstatus.collectorandparser.summaryhtml.JsystemSummaryHtmlReportField;
-
 /**
  * Interface responsible to parse report file taken from jsystem 
  * @author jtornovsky
@@ -20,3 +18,4 @@ public interface DataParser {
 	public Map<SummaryReportField, String> parseAutomationReport(String reportTargetLocation);
 	// TODO change JsystemSummaryReportField in a map to some general ENUM, like this Enum<?> 
 }
+
