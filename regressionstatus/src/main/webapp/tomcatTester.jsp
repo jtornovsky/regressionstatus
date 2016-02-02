@@ -5,6 +5,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1255">
 <title>Tomcat Tester</title>
+<img src="images/favicon.png" />
+<link rel="icon" type="image/png" href="images/favicon.png">
 </head>
 <body>
 	<h1>Tomcat is up and running</h1>
