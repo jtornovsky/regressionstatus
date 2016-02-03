@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.regressionstatus.data.current.CurrentRegressionStatusDataUpdater;
-import com.regressionstatus.data.frontendparameters.current.UrlParametersFiller;
+import com.regressionstatus.data.frontendparameters.current.UrlParametersHandler;
 
 /**
  * Class fetches data from overall map with the current regression status
@@ -50,10 +50,12 @@ public class RegressionCurrentStatusController {
 	 * holds the instance of a an data updater to be used to calculate status report for all regression setups 
 	 */
 	@Autowired
-	@Qualifier("currentRegressionStatusDataUpdaterSummaryJsonReport")
-	CurrentRegressionStatusDataUpdater regressionStatusUpdater;
-	
-	UrlParametersFiller urlParametersFiller;
+	@Qualifier("currentRegressionStatusDataUpdaterSummaryHtmlReport")
+	private CurrentRegressionStatusDataUpdater regressionStatusUpdater;
+
+	@Autowired
+	@Qualifier("urlParametersHandlerDao")
+	private UrlParametersHandler urlParametersHandler;
 
 	/**
 	 * fetches the calculated reports of a current regression status as a map
@@ -73,7 +75,7 @@ public class RegressionCurrentStatusController {
 	
 	@RequestMapping(value = "/rstatus/{parameters}", method = RequestMethod.GET)
 	public String showCurrentRegressionStatusWithParameters(@PathVariable("parameters") String parameters, Model model) {
-		urlParametersFiller.fillParametersMap(parameters);
+		urlParametersHandler.fillParametersMap(parameters);
 		return showCurrentRegressionStatus(parameters, model);
 	}
 }

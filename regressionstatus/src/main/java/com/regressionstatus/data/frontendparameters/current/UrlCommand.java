@@ -6,7 +6,7 @@ package com.regressionstatus.data.frontendparameters.current;
  * @author jtornovsky
  *
  */
-public enum UrlCommands {
+public enum UrlCommand {
 
 	IP("ip"),
 	USE_DEFAULT_IPS("usedefaultips"),
@@ -22,7 +22,7 @@ public enum UrlCommands {
 	public static final String COMMAND_TO_VALUES = "=";
 	public static final String COMMANDS_SEPARATOR = ";";
 
-	private UrlCommands(String urlCommand) {
+	private UrlCommand(String urlCommand) {
 		this.urlCommand = urlCommand;
 	}
 	
@@ -31,9 +31,9 @@ public enum UrlCommands {
 		return urlCommand;
 	}
 	
-	public static UrlCommands getEnumByString(String enumStringValue) {
-		UrlCommands enumValue = null;
-		for (UrlCommands value : UrlCommands.values()) {
+	public static UrlCommand getEnumByString(String enumStringValue) {
+		UrlCommand enumValue = null;
+		for (UrlCommand value : UrlCommand.values()) {
 			if (value.toString().equalsIgnoreCase(enumStringValue)) {
 				enumValue = value;
 			}

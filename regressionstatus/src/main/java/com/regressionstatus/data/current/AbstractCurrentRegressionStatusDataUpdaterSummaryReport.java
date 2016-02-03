@@ -18,6 +18,8 @@ import com.regressionstatus.collectorandparser.DataCollector;
 import com.regressionstatus.collectorandparser.DataParser;
 import com.regressionstatus.collectorandparser.SummaryReportField;
 import com.regressionstatus.data.current.runstatus.RunStatusCalculator;
+import com.regressionstatus.data.frontendparameters.current.UrlCommand;
+import com.regressionstatus.data.frontendparameters.current.UrlParametersHandler;
 
 public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport implements CurrentRegressionStatusDataUpdater {
 
@@ -42,8 +44,16 @@ public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport im
 	@Qualifier("runStatusGeneralCalculator")
 	protected RunStatusCalculator runStatusGeneralCalculator;
 	
+	@Autowired
+	@Qualifier("urlParametersHandlerDao")
+	private UrlParametersHandler urlParametersHandler;
+	
 	protected Map<SummaryReportField, String> parsedAutomationReport = null;	// to hold parsed report to calculate and fill singleSetupCurrentStatusMap
 	
+	/**
+	 * 
+	 * @return
+	 */
 	@Bean(name="overallSetupsCurrentStatusMap")
 	private Map<CurrentStatusTableField, List<String>> initOverallSetupsCurrentStatusMap() {
 		Map<CurrentStatusTableField, List<String>> localOverallSetupsCurrentStatusMap = new TreeMap<>(); // tree map to sort keys as their ordinal order
@@ -53,6 +63,10 @@ public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport im
 		return localOverallSetupsCurrentStatusMap;
 	}
 		
+	/**
+	 * 
+	 * @return
+	 */
 	@Bean(name="singleSetupCurrentStatusMap")
 	protected Map<CurrentStatusTableField, String> initSingleSetupCurrentStatusMap() {
 		Map<CurrentStatusTableField, String> localSingleSetupsCurrentStatusMap = new HashMap<>();
@@ -62,10 +76,16 @@ public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport im
 		return localSingleSetupsCurrentStatusMap;
 	}
 	
-	public void generalFetchStatusData(DataCollector dataCollector, DataParser dataParser) {
+	/**
+	 * 
+	 * @param dataCollector
+	 * @param dataParser
+	 */
+	protected void generalFetchStatusData(DataCollector dataCollector, DataParser dataParser) {
 
 		backUpOldDataAndClearOverallSetupsCurrentStatusMap();
 
+//		for (String remoteStationIpaddress : getRemoteStationsIpaddresses(UrlCommand.IP, remoteStationsIpaddresses.split(MULTI_VALUES_PROPERTY_SEPARATOR))); 
 		for (String remoteStationIpaddress : remoteStationsIpaddresses.split(MULTI_VALUES_PROPERTY_SEPARATOR)) {
 
 			singleSetupCurrentStatusMap =  initSingleSetupCurrentStatusMap();
@@ -88,8 +108,25 @@ public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport im
 		}
 	}
 	
+	/**
+	 * 
+	 * @param urlCommandIp
+	 * @param rawRemoteStationsIpaddresses
+	 * @return
+	 */
+	protected List<String> getRemoteStationsIpaddresses(UrlCommand urlCommandIp, String[] rawRemoteStationsIpaddresses) {
+		return urlParametersHandler.getParameterFromMap(urlCommandIp, rawRemoteStationsIpaddresses);
+	}
+	
+	/**
+	 * 
+	 * @param reportData
+	 * @return
+	 * @throws Exception
+	 */
 	abstract protected Map<CurrentStatusTableField, String> calculateValuesForSingleStationStatus(Map<SummaryReportField, String> reportData) throws Exception;
 
+	@Override
 	public Map<CurrentStatusTableField, List<String>> getOverallSetupsCurrentStatusMap() {
 		return this.overallSetupsCurrentStatusMap;
 	}
