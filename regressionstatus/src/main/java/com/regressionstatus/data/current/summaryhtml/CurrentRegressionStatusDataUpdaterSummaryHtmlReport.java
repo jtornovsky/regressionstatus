@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 
 import com.regressionstatus.collectorandparser.DataCollector;
 import com.regressionstatus.collectorandparser.DataParser;
@@ -21,7 +20,7 @@ import com.regressionstatus.data.current.CurrentStatusTableField;
  * @author jtornovsky
  *
  */
-@Component("currentRegressionStatusDataUpdaterSummaryHtmlReport")
+//@Component("currentRegressionStatusDataUpdaterSummaryHtmlReport")
 public class CurrentRegressionStatusDataUpdaterSummaryHtmlReport extends AbstractCurrentRegressionStatusDataUpdaterSummaryReport {
 	
 	@Autowired

@@ -16,6 +16,5 @@ public interface DataParser {
 	 * @return hash map with a parsed data
 	 */
 	public Map<SummaryReportField, String> parseAutomationReport(String reportTargetLocation);
-	// TODO change JsystemSummaryReportField in a map to some general ENUM, like this Enum<?> 
 }
 
