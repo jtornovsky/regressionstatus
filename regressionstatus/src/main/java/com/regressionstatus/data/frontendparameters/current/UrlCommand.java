@@ -9,16 +9,11 @@ package com.regressionstatus.data.frontendparameters.current;
 public enum UrlCommand {
 
 	IP("ip"),
-	USE_DEFAULT_IPS("usedefaultips"),
-	/////////////// for the future use
-	SHOW_IP("showip"),
-	ADD_IP("addip"),
-	REMOVE_IP("removeip"),
-	REMOVE_ALL_IPS("removeallips");
+	USE_DEFAULT_IPS("usedefaultips");
 	
 	private final String urlCommand;
 	
-	public static final String COMMAND_VALUES_SEPARATOR = "&";
+	public static final String PARAMS_SEPARATOR = "&";
 	public static final String COMMAND_TO_VALUES = "=";
 	public static final String COMMANDS_SEPARATOR = ";";
 

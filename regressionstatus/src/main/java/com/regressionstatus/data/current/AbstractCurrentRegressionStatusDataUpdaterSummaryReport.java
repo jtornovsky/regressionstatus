@@ -115,7 +115,7 @@ public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport im
 	 * @return
 	 */
 	protected List<String> getRemoteStationsIpaddresses(UrlCommand urlCommandIp, String[] rawRemoteStationsIpaddresses) {
-		return urlParametersHandler.getParameterFromMap(urlCommandIp, rawRemoteStationsIpaddresses);
+		return urlParametersHandler.getParameterFromMap(urlCommandIp);
 	}
 	
 	/**
