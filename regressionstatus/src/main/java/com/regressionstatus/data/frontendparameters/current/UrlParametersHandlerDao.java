@@ -57,9 +57,7 @@ public class UrlParametersHandlerDao implements UrlParametersHandler {
 		}
 	}
 
-	/**
-	 * 
-	 */
+
 	@Override
 	public List<String> getParameterFromMap(UrlCommand parameterKey) {
 		if (urlParametersContainer == null || !urlParametersContainer.containsKey(parameterKey)) {
