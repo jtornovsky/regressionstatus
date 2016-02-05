@@ -2,6 +2,7 @@ package com.regressionstatus.data.current;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,8 +86,8 @@ public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport im
 
 		backUpOldDataAndClearOverallSetupsCurrentStatusMap();
 
-//		for (String remoteStationIpaddress : getRemoteStationsIpaddresses(UrlCommand.IP, remoteStationsIpaddresses.split(MULTI_VALUES_PROPERTY_SEPARATOR))); 
-		for (String remoteStationIpaddress : remoteStationsIpaddresses.split(MULTI_VALUES_PROPERTY_SEPARATOR)) {
+		for (String remoteStationIpaddress : getRemoteStationsIpaddresses(remoteStationsIpaddresses)) { 
+//		for (String remoteStationIpaddress : remoteStationsIpaddresses.split(MULTI_VALUES_PROPERTY_SEPARATOR)) {
 
 			singleSetupCurrentStatusMap =  initSingleSetupCurrentStatusMap();
 			try {
@@ -114,8 +115,21 @@ public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport im
 	 * @param rawRemoteStationsIpaddresses
 	 * @return
 	 */
-	protected List<String> getRemoteStationsIpaddresses(UrlCommand urlCommandIp, String[] rawRemoteStationsIpaddresses) {
-		return urlParametersHandler.getParameterFromMap(urlCommandIp);
+	private List<String> getRemoteStationsIpaddresses(String rawRemoteStationsIpaddresses) {
+		List<String> ipAddressesList = urlParametersHandler.getParameterFromMap(UrlCommand.IP);
+		List<String> shouldBeUsedDefaultIps = urlParametersHandler.getParameterFromMap(UrlCommand.USE_DEFAULT_IPS);
+		List<String> defaultIps = Arrays.asList(rawRemoteStationsIpaddresses, MULTI_VALUES_PROPERTY_SEPARATOR);
+		
+		if (ipAddressesList == null) {	// no custom ipaddresses, but only default ones
+			return defaultIps;
+		} 
+		
+		if (ipAddressesList != null && shouldBeUsedDefaultIps != null) {
+			if (Boolean.parseBoolean(shouldBeUsedDefaultIps.get(0).toLowerCase())) {
+				ipAddressesList.addAll(defaultIps);
+			}
+		}
+		return ipAddressesList;
 	}
 	
 	/**
