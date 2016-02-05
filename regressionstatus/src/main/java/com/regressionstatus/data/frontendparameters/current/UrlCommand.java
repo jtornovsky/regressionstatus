@@ -9,7 +9,7 @@ package com.regressionstatus.data.frontendparameters.current;
 public enum UrlCommand {
 
 	IP("ip"),
-	USE_DEFAULT_IPS("usedefaultips");
+	USE_WITH_DEFAULT_IPS("usedefaultips");
 	
 	private final String urlCommand;
 	
