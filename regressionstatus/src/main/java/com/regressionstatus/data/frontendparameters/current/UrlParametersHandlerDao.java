@@ -9,6 +9,7 @@ import java.util.TreeMap;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.validator.routines.InetAddressValidator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
@@ -48,13 +49,48 @@ public class UrlParametersHandlerDao implements UrlParametersHandler {
 				System.out.println("Unrecognized params: " + command + ". Skipping to the next.");
 				continue;
 			}
-			List<String> params = Arrays.asList(parametersAsStringArray);
+			List<String> params = validateParams(cmd, Arrays.asList(parametersAsStringArray));
 			if (params != null) {	// if params list is not empty
 				urlParametersContainer.put(cmd, params);
-			} else {
-				System.out.println("Params list of the command: " + command + " is empty. Skipping");
+			} 
+		}
+	}
+	
+	private List<String> validateParams(UrlCommand cmd, List<String> cmdParams) {
+		
+		if (cmdParams == null) {
+			System.out.println("Params list of the command: " + cmd.toString() + " is empty. Skipping");
+			return null;
+		}
+		
+		List<String> cmdValidatedParams = new ArrayList<>();
+		String ipAddr = null;
+		String boolValue = null;
+		
+		for (String cmdParam : cmdParams) {
+			switch (cmd) {
+			case IP:
+				ipAddr = cmdParam.trim();
+				if (InetAddressValidator.getInstance().isValid(ipAddr)) {
+					cmdValidatedParams.add(ipAddr);
+				} else {
+					System.out.println("Illegal ip adress: " + cmdParam + ". Skipping");
+				}
+				break;
+			case USE_WITH_DEFAULT_IPS:
+				boolValue = cmdParam.toLowerCase().trim();
+				if (boolValue.equals("false") || boolValue.equals("true")) {
+					cmdValidatedParams.add(boolValue);
+				} else {
+					System.out.println("Illegal boolean value: " + cmdParam + ". Skipping");
+				}
+				break;
+			default:
+				// nothing to do
+				break;
 			}
 		}
+		return cmdValidatedParams;
 	}
 
 

@@ -1,6 +1,8 @@
 package com.regressionstatus.controller;
 
 
+import javax.servlet.http.HttpServletRequest;
+
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,8 +75,9 @@ public class RegressionCurrentStatusController {
 		return "regCurrStatusPage";	// jsp page to be returned and displayed
 	}
 	
-	@RequestMapping(value = "/rstatus/{parameters}", method = RequestMethod.GET)
-	public String showCurrentRegressionStatusWithParameters(@PathVariable("parameters") String parameters, Model model) {
+	@RequestMapping(value = "/rstatus/{parameters:.+}", method = RequestMethod.GET)
+	public String showCurrentRegressionStatusWithParameters(@PathVariable("parameters") String parameters, HttpServletRequest request, Model model) {
+		String param = request.getContextPath();
 		urlParametersHandler.fillParametersMap(parameters);
 		return showCurrentRegressionStatus(parameters, model);
 	}

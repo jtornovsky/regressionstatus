@@ -118,14 +118,15 @@ public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport im
 	private List<String> getRemoteStationsIpaddresses(String rawRemoteStationsIpaddresses) {
 		List<String> ipAddressesList = urlParametersHandler.getParameterFromMap(UrlCommand.IP);
 		List<String> shouldBeWithUsedDefaultIps = urlParametersHandler.getParameterFromMap(UrlCommand.USE_WITH_DEFAULT_IPS);
-		List<String> defaultIps = Arrays.asList(rawRemoteStationsIpaddresses, MULTI_VALUES_PROPERTY_SEPARATOR);
+		List<String> defaultIps = Arrays.asList(rawRemoteStationsIpaddresses.trim().split(MULTI_VALUES_PROPERTY_SEPARATOR));
 		
 		if (ipAddressesList == null) {	// no custom ipaddresses, but only default ones
 			return defaultIps;
 		} 
 		
 		if (ipAddressesList != null && shouldBeWithUsedDefaultIps != null) {
-			if (Boolean.parseBoolean(shouldBeWithUsedDefaultIps.get(0).toLowerCase())) {
+			boolean isDefaultIpsShouldBeUsed = Boolean.parseBoolean(shouldBeWithUsedDefaultIps.get(0));
+			if (isDefaultIpsShouldBeUsed) {
 				ipAddressesList.addAll(defaultIps);
 			}
 		}
