@@ -39,7 +39,7 @@ public class UrlParametersHandlerDao implements UrlParametersHandler {
 		urlParametersContainer.clear(); //deleting previously filled values
 
 		for (String command : parameters.split(UrlCommand.COMMANDS_SEPARATOR)) {
-			UrlCommand cmd = UrlCommand.getEnumByString(command.split(UrlCommand.COMMAND_TO_VALUES)[0]);
+			UrlCommand cmd = UrlCommand.getEnumByString(command.trim().split(UrlCommand.COMMAND_TO_VALUES)[0]);
 			if (cmd == null) {
 				System.out.println("Unrecognized command: " + command + ". Skipping to the next.");
 				continue;

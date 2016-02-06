@@ -29,7 +29,7 @@ public enum UrlCommand {
 	public static UrlCommand getEnumByString(String enumStringValue) {
 		UrlCommand enumValue = null;
 		for (UrlCommand value : UrlCommand.values()) {
-			if (value.toString().equalsIgnoreCase(enumStringValue)) {
+			if (value.toString().equalsIgnoreCase(enumStringValue.trim())) {
 				enumValue = value;
 			}
 		}
