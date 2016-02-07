@@ -42,20 +42,24 @@ public class UrlParametersHandlerDao implements UrlParametersHandler {
 		clearUrlParametersMap();
 
 		for (String command : parameters.split(UrlCommand.COMMANDS_SEPARATOR)) {
-			UrlCommand cmd = UrlCommand.getEnumByString(command.trim().split(UrlCommand.COMMAND_TO_VALUES)[0]);
-			if (cmd == null) {
-				System.out.println("Unrecognized command: " + command + ". Skipping to the next.");
-				continue;
+			try {
+				UrlCommand cmd = UrlCommand.getEnumByString(command.trim().split(UrlCommand.COMMAND_TO_VALUES)[0]);
+				if (cmd == null) {
+					System.out.println("Unrecognized command: " + command + ". Skipping to the next.");
+					continue;
+				}
+				String[] parametersAsStringArray = command.split(UrlCommand.COMMAND_TO_VALUES)[1].split(UrlCommand.PARAMS_SEPARATOR);
+				if (parametersAsStringArray == null) {
+					System.out.println("Unrecognized params: " + command + ". Skipping to the next.");
+					continue;
+				}
+				List<String> params = validateParams(cmd, Arrays.asList(parametersAsStringArray));
+				if (params != null) {	// if params list is not empty
+					urlParametersContainer.put(cmd, params);
+				} 
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			String[] parametersAsStringArray = command.split(UrlCommand.COMMAND_TO_VALUES)[1].split(UrlCommand.PARAMS_SEPARATOR);
-			if (parametersAsStringArray == null) {
-				System.out.println("Unrecognized params: " + command + ". Skipping to the next.");
-				continue;
-			}
-			List<String> params = validateParams(cmd, Arrays.asList(parametersAsStringArray));
-			if (params != null) {	// if params list is not empty
-				urlParametersContainer.put(cmd, params);
-			} 
 		}
 	}
 	
