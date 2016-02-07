@@ -38,7 +38,7 @@ public class CurrentRegressionStatusDataUpdaterSummaryHtmlReport extends Abstrac
 	}
 
 	/**
-	 * calculating values of a gathered data
+	 * calculating values of a final report from a gathered and parsed data
 	 */
 	@Override
 	protected Map<CurrentStatusTableField, String> calculateValuesForSingleStationStatus(Map<SummaryReportField, String> reportData) throws Exception {

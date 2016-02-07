@@ -78,7 +78,8 @@ public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport im
 	}
 	
 	/**
-	 * 
+	 * fetches jsystem report (json or html) from predefined setups, parses data from those reports
+	 * and calculate final reports to be shown in jsp page
 	 * @param dataCollector
 	 * @param dataParser
 	 */
@@ -87,8 +88,6 @@ public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport im
 		backUpOldDataAndClearOverallSetupsCurrentStatusMap();
 
 		for (String remoteStationIpaddress : getRemoteStationsIpaddresses(remoteStationsIpaddresses)) { 
-//		for (String remoteStationIpaddress : remoteStationsIpaddresses.split(MULTI_VALUES_PROPERTY_SEPARATOR)) {
-
 			singleSetupCurrentStatusMap =  initSingleSetupCurrentStatusMap();
 			try {
 				remoteStationIpaddress = remoteStationIpaddress.trim();
@@ -110,33 +109,36 @@ public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport im
 	}
 	
 	/**
-	 * 
-	 * @param urlCommandIp
-	 * @param rawRemoteStationsIpaddresses
-	 * @return
+	 * retrieves the ip addresses of setups to collect jsystem reports from
+	 * @param rawRemoteStationsIpaddresses - default ip addresses appear in app.properties
+	 * @return list of all ips of the setups to collect jsystem reports from
 	 */
 	private List<String> getRemoteStationsIpaddresses(String rawRemoteStationsIpaddresses) {
-		List<String> ipAddressesList = urlParametersHandler.getParameterFromMap(UrlCommand.IP);
-		List<String> shouldBeWithUsedDefaultIps = urlParametersHandler.getParameterFromMap(UrlCommand.USE_WITH_DEFAULT_IPS);
+		List<String> ipAddressesList = urlParametersHandler.getUrlParameterFromMap(UrlCommand.IP);
+		List<String> shouldBeWithUsedDefaultIps = urlParametersHandler.getUrlParameterFromMap(UrlCommand.USE_WITH_DEFAULT_IPS);
 		List<String> defaultIps = Arrays.asList(rawRemoteStationsIpaddresses.trim().split(MULTI_VALUES_PROPERTY_SEPARATOR));
 		
-		if (ipAddressesList == null) {	// no custom ipaddresses, but only default ones
+		if (ipAddressesList == null || ipAddressesList.size() == 0) {	// no custom ipaddresses, but only default ones
 			return defaultIps;
 		} 
 		
-		if (ipAddressesList != null && shouldBeWithUsedDefaultIps != null) {
+		if (ipAddressesList != null && ipAddressesList.size() > 0 && shouldBeWithUsedDefaultIps != null && shouldBeWithUsedDefaultIps.size() > 0) {
 			boolean isDefaultIpsShouldBeUsed = Boolean.parseBoolean(shouldBeWithUsedDefaultIps.get(0));
 			if (isDefaultIpsShouldBeUsed) {
 				ipAddressesList.addAll(defaultIps);
 			}
 		}
+		
+		// after getting all params the map should be cleared from data, not to affect rstatus without parameters
+		urlParametersHandler.clearUrlParametersMap();
+		
 		return ipAddressesList;
 	}
 	
 	/**
-	 * 
-	 * @param reportData
-	 * @return
+	 * holds the logic of calculating values to be shown in the final report 
+	 * @param reportData - report as appears in jsystem (json or html)
+	 * @return final report of an examined setup
 	 * @throws Exception
 	 */
 	abstract protected Map<CurrentStatusTableField, String> calculateValuesForSingleStationStatus(Map<SummaryReportField, String> reportData) throws Exception;

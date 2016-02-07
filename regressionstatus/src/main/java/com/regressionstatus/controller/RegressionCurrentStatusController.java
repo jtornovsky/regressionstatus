@@ -1,8 +1,6 @@
 package com.regressionstatus.controller;
 
 
-import javax.servlet.http.HttpServletRequest;
-
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,12 @@ import com.regressionstatus.data.frontendparameters.current.UrlParametersHandler
 /**
  * Class fetches data from overall map with the current regression status
  * and passes it to rstatus.jsp page
- * link to use: http://localhost:8080/regressionstatus/showCurrentStatus/rstatus
+ * link to use: 
+ * http://localhost:8080/regressionstatus/showCurrentStatus/rstatus
+ * {@link}
+ * link to use when providing parameters:
+ * http://localhost:8080/regressionstatus/showCurrentStatus/rstatus/ip=192.168.30.45&192.168.20.107&192.168.20.245;usedefaultips=true
+ * http://localhost:8080/regressionstatus/showCurrentStatus/rstatus/ip=192.168.30.45&192.168.20.107;usedefaultips=false 
  * {@link}  
  * @author jtornovsky
  *
@@ -75,10 +78,15 @@ public class RegressionCurrentStatusController {
 		return "regCurrStatusPage";	// jsp page to be returned and displayed
 	}
 	
+	/**
+	 * Retrieves parameters given in URL 
+	 * @param parameters - parameters in URL
+	 * @param model - object to be filled with data to show in the web page
+	 * @return - jsp page name to be returned and displayed
+	 */
 	@RequestMapping(value = "/rstatus/{parameters:.+}", method = RequestMethod.GET)
-	public String showCurrentRegressionStatusWithParameters(@PathVariable("parameters") String parameters, HttpServletRequest request, Model model) {
-		String param = request.getContextPath();
-		urlParametersHandler.fillParametersMap(parameters);
+	public String showCurrentRegressionStatusWithParameters(@PathVariable("parameters") String parameters, Model model) {
+		urlParametersHandler.fillUrlParametersMap(parameters);
 		return showCurrentRegressionStatus(parameters, model);
 	}
 }

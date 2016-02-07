@@ -2,7 +2,6 @@ package com.regressionstatus.data.frontendparameters.current;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -13,8 +12,11 @@ import org.apache.commons.validator.routines.InetAddressValidator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-import com.regressionstatus.data.current.CurrentStatusTableField;
-
+/**
+ * class works with external parameters provided via url
+ * @author jtornovsky
+ *
+ */
 @Component("urlParametersHandlerDao")
 public class UrlParametersHandlerDao implements UrlParametersHandler {
 	
@@ -31,12 +33,13 @@ public class UrlParametersHandlerDao implements UrlParametersHandler {
 	}
 
 	/**
-	 * 
+	 * retrieves and fills a map with parameters from URL  
+	 * @param parameters - parameters in string format taken from url
 	 */
 	@Override
-	public void fillParametersMap(String parameters) {
+	public void fillUrlParametersMap(String parameters) {
 
-		urlParametersContainer.clear(); //deleting previously filled values
+		clearUrlParametersMap();
 
 		for (String command : parameters.split(UrlCommand.COMMANDS_SEPARATOR)) {
 			UrlCommand cmd = UrlCommand.getEnumByString(command.trim().split(UrlCommand.COMMAND_TO_VALUES)[0]);
@@ -56,6 +59,12 @@ public class UrlParametersHandlerDao implements UrlParametersHandler {
 		}
 	}
 	
+	/**
+	 * validates the correctness of values of the provided commands
+	 * @param cmd - command
+	 * @param cmdParams - command's parameters
+	 * @return - list of validated parameters
+	 */
 	private List<String> validateParams(UrlCommand cmd, List<String> cmdParams) {
 		
 		if (cmdParams == null) {
@@ -93,9 +102,12 @@ public class UrlParametersHandlerDao implements UrlParametersHandler {
 		return cmdValidatedParams;
 	}
 
-
+	/**
+	 * @param parameterKey - command as appears in UrlCommand enum
+	 * @return parameters of the given command
+	 */
 	@Override
-	public List<String> getParameterFromMap(UrlCommand parameterKey) {
+	public List<String> getUrlParameterFromMap(UrlCommand parameterKey) {
 		if (urlParametersContainer == null || !urlParametersContainer.containsKey(parameterKey)) {
 			return null;
 		} 
@@ -103,10 +115,18 @@ public class UrlParametersHandlerDao implements UrlParametersHandler {
 	}
 
 	/**
-	 * 
+	 * @return entire map with commands and their parameters, which were provided by url
 	 */
 	@Override
-	public Map<UrlCommand, List<String>> getAllParametersFromMap() {
+	public Map<UrlCommand, List<String>> getAllUrlParametersFromMap() {
 		return urlParametersContainer;
+	}
+
+	/**
+	 * after getting all params the map should be cleared from data, not to affect rstatus without parameters
+	 */
+	@Override
+	public void clearUrlParametersMap() {
+		urlParametersContainer.clear(); //deleting previously filled values
 	}
 }

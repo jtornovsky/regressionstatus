@@ -1,5 +1,10 @@
 package com.regressionstatus.collectorandparser;
 
+/**
+ * interface responsible to fetch data from the remote server to the local machine
+ * @author jtornovsky
+ *
+ */
 public interface DataCollector {
 
 	/**

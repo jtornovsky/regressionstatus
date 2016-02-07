@@ -5,6 +5,11 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+/**
+ * Class to configure RequestMappingHandlerMapping spring class not to suppress ';' and '.' in url
+ * @author jtornovsky
+ *
+ */
 @Configuration
 public class MyBeanPostProcessor implements BeanPostProcessor {
 
