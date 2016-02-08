@@ -145,6 +145,7 @@ public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport im
 
 	@Override
 	public Map<CurrentStatusTableField, List<String>> getOverallSetupsCurrentStatusMap() {
+		// add routine to calculate bounded ips (if any) prior returning overall status map
 		return this.overallSetupsCurrentStatusMap;
 	}
 	

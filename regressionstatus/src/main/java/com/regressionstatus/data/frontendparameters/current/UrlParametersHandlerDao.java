@@ -87,9 +87,10 @@ public class UrlParametersHandlerDao implements UrlParametersHandler {
 				if (InetAddressValidator.getInstance().isValid(ipAddr)) {
 					cmdValidatedParams.add(ipAddr);
 				} else {
-					System.out.println("Illegal ip adress: " + cmdParam + ". Skipping");
+					System.out.println("Illegal ip address: " + cmdParam + ". Skipping");
 				}
 				break;
+				
 			case USE_WITH_DEFAULT_IPS:
 				boolValue = cmdParam.toLowerCase().trim();
 				if (boolValue.equals("false") || boolValue.equals("true")) {
@@ -98,6 +99,20 @@ public class UrlParametersHandlerDao implements UrlParametersHandler {
 					System.out.println("Illegal boolean value: " + cmdParam + ". Skipping");
 				}
 				break;
+				
+			case BIND:
+				String boundIpsGroup = "";
+				for (String boundIp : cmdParam.split(UrlCommand.BIND_COMMAND_PARAMETERS_SEPARATOR)) {
+					ipAddr = boundIp.trim();
+					if (InetAddressValidator.getInstance().isValid(ipAddr)) {
+						boundIpsGroup += ipAddr+UrlCommand.BIND_COMMAND_PARAMETERS_SEPARATOR;
+					} else {
+						System.out.println("Illegal ip address: " + boundIp + ". Skipping");
+					}
+				}
+				cmdValidatedParams.add(boundIpsGroup);
+				break;
+				
 			default:
 				// nothing to do
 				break;

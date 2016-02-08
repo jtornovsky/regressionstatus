@@ -4,13 +4,15 @@ package com.regressionstatus.data.frontendparameters.current;
  * treating url with parameters, like that:
  * http://localhost:8080/regressionstatus/showCurrentStatus/rstatus/ip=192.168.30.45&192.168.20.107&192.168.20.245;usedefaultips=true
  * http://localhost:8080/regressionstatus/showCurrentStatus/rstatus/ip=192.168.30.45&192.168.20.107;usedefaultips=false 
+ * http://localhost:8080/regressionstatus/showCurrentStatus/rstatus/ip=192.168.20.245&192.168.20.107&192.168.30.45;bind=192.168.20.107'192.168.30.45&192.168.20.245'192.168.20.107
  * @author jtornovsky
  *
  */
 public enum UrlCommand {
 
 	IP("ip"),
-	USE_WITH_DEFAULT_IPS("usedefaultips");
+	USE_WITH_DEFAULT_IPS("usedefaultips"),
+	BIND("bind");
 	
 	private final String urlCommand;
 	
@@ -18,6 +20,7 @@ public enum UrlCommand {
 	public static final String PARAMS_SEPARATOR = "&";
 	public static final String COMMAND_TO_VALUES = "=";
 	public static final String COMMANDS_SEPARATOR = ";";
+	public static final String BIND_COMMAND_PARAMETERS_SEPARATOR = "'";
 
 	private UrlCommand(String urlCommand) {
 		this.urlCommand = urlCommand;
