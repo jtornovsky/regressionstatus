@@ -69,7 +69,7 @@ public class UrlParametersHandlerDao implements UrlParametersHandler {
 	 * @param cmdParams - command's parameters
 	 * @return - list of validated parameters
 	 */
-	private List<String> validateParams(UrlCommand cmd, List<String> cmdParams) {
+	private List<String> validateParams(UrlCommand cmd, List<String> cmdParams) throws Exception {
 		
 		if (cmdParams == null) {
 			System.out.println("Params list of the command: " + cmd.toString() + " is empty. Skipping");

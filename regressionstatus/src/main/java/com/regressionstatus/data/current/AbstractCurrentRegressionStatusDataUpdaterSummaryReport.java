@@ -143,12 +143,79 @@ public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport im
 	 */
 	abstract protected Map<CurrentStatusTableField, String> calculateValuesForSingleStationStatus(Map<SummaryReportField, String> reportData) throws Exception;
 
+	/**
+	 * 
+	 * @return
+	 */
 	@Override
 	public Map<CurrentStatusTableField, List<String>> getOverallSetupsCurrentStatusMap() {
-		// add routine to calculate bounded ips (if any) prior returning overall status map
+		List<String> boundIpAddressesGroups = urlParametersHandler.getUrlParameterFromMap(UrlCommand.BIND);
+		
+		if (boundIpAddressesGroups == null || boundIpAddressesGroups.size() == 0) {	// no bound ipaddresses, return map as it is
+			return this.overallSetupsCurrentStatusMap;
+		} 
+		
+		Map<CurrentStatusTableField, List<String>> boundIpAddrsMap = new HashMap<>();
+		for (String boundIpAddressesGroup : boundIpAddressesGroups) {
+			String[] boundIps = boundIpAddressesGroup.split(UrlCommand.BIND_COMMAND_PARAMETERS_SEPARATOR);
+			// collect data of bound group
+			for (String ip : boundIps) {
+				// move all bound group from overallSetupsCurrentStatusMap to boundIpAddrsMap
+				int ipEntryIndex = getIndexInListPerEntry(CurrentStatusTableField.URL, ip);
+				if (ipEntryIndex != -1) {
+					moveEntryFromMapToMap(overallSetupsCurrentStatusMap, boundIpAddrsMap, ipEntryIndex);
+				} else {
+					// ip not found
+					continue;
+				}
+			}
+			// calculate totals of collected data of bound group
+			String saVersion = null;
+			String totalTestsInRun = null;
+			String runStatus = null;
+			for (CurrentStatusTableField currentStatusTableField : CurrentStatusTableField.values()) {
+				switch (currentStatusTableField) {
+				case PASSED_TESTS_OUT_OF_RUN_TESTS:
+					break;
+				case PASS_PERCENTAGE:
+					break;
+				case PROGRESS_PERCENTAGE:
+					break;
+				case RUN_STATUS:
+					break;
+				case RUN_TYPE:
+					break;
+				case SA_VERSION:
+					break;
+				case TOTAL_TESTS_IN_RUN:
+					break;
+				case URL:
+					break;
+				default:
+					break;
+				}
+			}
+			// add calculated result to overallSetupsCurrentStatusMap
+			
+			// clear boundIpAddrsMap for the calculation of values of the next bound group
+			boundIpAddrsMap.clear();
+		}
 		return this.overallSetupsCurrentStatusMap;
 	}
 	
+	private void moveEntryFromMapToMap(Map<CurrentStatusTableField, List<String>> srcMap, Map<CurrentStatusTableField, List<String>> dstMap, int entryIndexInSrcMap) {
+		
+	}
+	
+	private int getIndexInListPerEntry(CurrentStatusTableField currentStatusTableField, String entry) {
+		int index = -1;
+		
+		return index;
+	}
+	
+	/**
+	 * 
+	 */
 	protected void backUpOldDataAndClearOverallSetupsCurrentStatusMap() {
 		// TODO backup procedure for the old data
 		for (CurrentStatusTableField statusTableField : CurrentStatusTableField.values()) {
@@ -156,11 +223,14 @@ public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport im
 		}
 	}
 	
+	/**
+	 * 
+	 * @param singleSetupCurrentStatusMap
+	 */
 	protected void fillOverallSetupsStatusMap(Map<CurrentStatusTableField, String> singleSetupCurrentStatusMap) {
 //		backUpOldDataAndClearOverallSetupsCurrentStatusMap();
 		for (CurrentStatusTableField statusTableField : CurrentStatusTableField.values()) {
 			getOverallSetupsCurrentStatusMap().get(statusTableField).add(singleSetupCurrentStatusMap.get(statusTableField));
 		}
 	}
-
 }
