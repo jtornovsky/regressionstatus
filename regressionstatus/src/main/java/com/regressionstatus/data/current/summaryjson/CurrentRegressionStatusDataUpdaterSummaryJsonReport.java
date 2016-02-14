@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import com.regressionstatus.collectorandparser.DataCollector;
 import com.regressionstatus.collectorandparser.DataParser;
 import com.regressionstatus.collectorandparser.SummaryReportField;
+import com.regressionstatus.collectorandparser.summaryhtml.JsystemSummaryHtmlReportField;
 import com.regressionstatus.collectorandparser.summaryjson.JsystemSummaryJsonReportField;
 import com.regressionstatus.data.current.AbstractCurrentRegressionStatusDataUpdaterSummaryReport;
 import com.regressionstatus.data.current.CurrentStatusTableField;
@@ -43,6 +44,8 @@ public class CurrentRegressionStatusDataUpdaterSummaryJsonReport extends Abstrac
 	protected Map<CurrentStatusTableField, String> calculateValuesForSingleStationStatus(Map<SummaryReportField, String> reportData) throws Exception {
 		
 		Map<CurrentStatusTableField, String> statusMap = initSingleSetupCurrentStatusMap();
+		
+		statusMap.put(CurrentStatusTableField.URL, getUrl(reportData.get(JsystemSummaryHtmlReportField.STATION)));
 		
 		String saVersion = reportData.get(JsystemSummaryJsonReportField.SMARTAIR_VERSION);
 		String runType = reportData.get(JsystemSummaryJsonReportField.SCENARIO).substring(reportData.get(JsystemSummaryJsonReportField.SCENARIO).indexOf('-')+1);
@@ -81,15 +84,7 @@ public class CurrentRegressionStatusDataUpdaterSummaryJsonReport extends Abstrac
 		statusMap.put(CurrentStatusTableField.TOTAL_TESTS_IN_RUN, totalTestsInRunInStringFormat);
 		statusMap.put(CurrentStatusTableField.RUN_STATUS, runStatus);
 //		statusMap.put(CurrentStatusTableField.COMMENTS, "no details");	// the column temporary disabled
-		
-		URL url = null;
-		try {
-			url = new URL("http://"+reportData.get(JsystemSummaryJsonReportField.STATION));
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			return statusMap;	// if values above are null, no sense to do further calculations, returning map as it is
-		}
-		statusMap.put(CurrentStatusTableField.URL, url.toString());
+
 		return statusMap;
 	}
 }

@@ -45,6 +45,8 @@ public class CurrentRegressionStatusDataUpdaterSummaryHtmlReport extends Abstrac
 		
 		Map<CurrentStatusTableField, String> statusMap = initSingleSetupCurrentStatusMap();
 		
+		statusMap.put(CurrentStatusTableField.URL, getUrl(reportData.get(JsystemSummaryHtmlReportField.STATION)));
+		
 		String saVersion = reportData.get(JsystemSummaryHtmlReportField.SA_CORE_VERSION)+"-"+reportData.get(JsystemSummaryHtmlReportField.SA_CORE_VERSION_BUILD);
 		String runType = reportData.get(JsystemSummaryHtmlReportField.SCENARIO).substring(reportData.get(JsystemSummaryHtmlReportField.SCENARIO).indexOf('-')+1);
 		String totalTestsInRunInStringFormat = reportData.get(JsystemSummaryHtmlReportField.TOTAL_ENABLED_TESTS);
@@ -85,14 +87,6 @@ public class CurrentRegressionStatusDataUpdaterSummaryHtmlReport extends Abstrac
 		statusMap.put(CurrentStatusTableField.RUN_STATUS, runStatus);
 //		statusMap.put(CurrentStatusTableField.COMMENTS, "no details");	// the column temporary disabled
 		
-		URL url = null;
-		try {
-			url = new URL("http://"+reportData.get(JsystemSummaryHtmlReportField.STATION));
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			return statusMap;	// if values above are null, no sense to do further calculations, returning map as it is
-		}
-		statusMap.put(CurrentStatusTableField.URL, url.toString());
 		return statusMap;
 	}
 }

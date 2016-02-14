@@ -40,7 +40,7 @@
 						switch(status) {
 						case URL:
 							if (!fieldToShow.toString().equals(CurrentRegressionStatusDataUpdater.VALUE_NOT_AVAILABLE)) {
-								fieldToShow = "<td><a href='" + fieldToShow + "'>" + fieldToShow + "</a></td>";
+								fieldToShow = "<td><a href='" + fieldToShow + "' target=\"_blank\">" + fieldToShow + "</a></td>";
 								break;
 							}
 						default:
