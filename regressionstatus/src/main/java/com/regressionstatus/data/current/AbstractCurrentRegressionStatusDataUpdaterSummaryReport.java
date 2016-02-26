@@ -26,6 +26,10 @@ import com.regressionstatus.data.frontendparameters.current.UrlCommand;
 import com.regressionstatus.data.frontendparameters.current.UrlParametersHandler;
 
 public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport implements CurrentRegressionStatusDataUpdater {
+	
+	private final String URL_PREFIX = "http://";
+	
+	protected final String PASSED_TESTS_OUT_OF_RUN_TESTS_SEPARATOR = " out of ";
 
 	@Resource(name="overallSetupsCurrentStatusMap")
 	private Map<CurrentStatusTableField, List<String>> overallSetupsCurrentStatusMap;
@@ -150,23 +154,25 @@ public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport im
 	abstract protected Map<CurrentStatusTableField, String> calculateValuesForSingleStationStatus(Map<SummaryReportField, String> reportData) throws Exception;
 
 	/**
-	 * 
+	 * returns the map that holds the overall current status of all regression setups
 	 * @return
 	 */
 	@Override
 	public Map<CurrentStatusTableField, List<String>> getOverallSetupsCurrentStatusMap() {
-//		List<String> boundIpAddressesGroups = urlParametersHandler.getUrlParameterFromMap(UrlCommand.BIND);
-//		
-//		if (boundIpAddressesGroups != null && boundIpAddressesGroups.size() > 0) {	// calculate grouped setups if any
-//			this.overallSetupsCurrentStatusMap = calculateOverallSetupsCurrentStatusMapWithBoundedGroups(boundIpAddressesGroups, overallSetupsCurrentStatusMap);
-//		} 
+		
+		List<String> boundIpAddressesGroups = urlParametersHandler.getUrlParameterFromMap(UrlCommand.BIND);
+		
+		if (boundIpAddressesGroups != null && boundIpAddressesGroups.size() > 0) {	// calculate grouped setups if any
+			this.overallSetupsCurrentStatusMap = calculateOverallSetupsCurrentStatusMapWithBoundedGroups(boundIpAddressesGroups, overallSetupsCurrentStatusMap);
+		} 
 		
 		return this.overallSetupsCurrentStatusMap;
 	}
 	
 	/**
-	 * 
-	 * @param boundIpAddressesGroups
+	 * calculates the bound groups
+	 * used to calculate distributed runs
+	 * @param boundIpAddressesGroups - bound groups retrieved from the url command line
 	 * @return
 	 */
 	private Map<CurrentStatusTableField, List<String>> calculateOverallSetupsCurrentStatusMapWithBoundedGroups(List<String> boundIpAddressesGroups, Map<CurrentStatusTableField, List<String>> overallBoundIpAddressesGroups) {
@@ -174,11 +180,17 @@ public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport im
 		Map<CurrentStatusTableField, List<String>> boundIpAddrsMap = new HashMap<>();
 		
 		for (String boundIpAddressesGroup : boundIpAddressesGroups) {
+			// dividing groups into single bound group
 			String[] boundIps = boundIpAddressesGroup.split(UrlCommand.BIND_COMMAND_PARAMETERS_SEPARATOR);
 			// collect data of bound group
 			for (String ip : boundIps) {
 				// move all bound group from overallSetupsCurrentStatusMap to boundIpAddrsMap
-				int ipEntryIndex = getIndexInListPerEntry(CurrentStatusTableField.URL, ip);
+				int ipEntryIndex = -1;
+				try {
+					ipEntryIndex = getIndexInListPerEntry(overallBoundIpAddressesGroups, CurrentStatusTableField.URL, getUrl(ip));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				if (ipEntryIndex != -1) {
 					moveEntryFromMapToMap(overallBoundIpAddressesGroups, boundIpAddrsMap, ipEntryIndex);
 				} else {
@@ -186,36 +198,70 @@ public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport im
 					continue;
 				}
 			}
+			
 			// calculate totals of collected data of bound group
-			String saVersion = "";
-			String totalTestsInRun = "";
-			String runStatus = "";
-			String url = "";
+			String boundValuesSeparator = "#";
 			for (CurrentStatusTableField currentStatusTableField : CurrentStatusTableField.values()) {
 				switch (currentStatusTableField) {
-				case PASSED_TESTS_OUT_OF_RUN_TESTS:
-					break;
-				case PASS_PERCENTAGE:
-					break;
 				case PROGRESS_PERCENTAGE:
+				case PASSED_TESTS_OUT_OF_RUN_TESTS:
+				case PASS_PERCENTAGE:
+					double pTests = 0;
+					double rTests = 0;
+					double tTestsInRun = 0;
+					for (String sValue : boundIpAddrsMap.get(CurrentStatusTableField.PASSED_TESTS_OUT_OF_RUN_TESTS)) {
+						String[] pTestOutOfRtests = sValue.split(PASSED_TESTS_OUT_OF_RUN_TESTS_SEPARATOR);
+						
+						try {
+							pTests += Integer.parseInt(pTestOutOfRtests[0]);
+							rTests += Integer.parseInt(pTestOutOfRtests[1]);
+						} catch (NumberFormatException e) {
+							e.printStackTrace();
+						}
+						
+					}
+					if (currentStatusTableField == CurrentStatusTableField.PASSED_TESTS_OUT_OF_RUN_TESTS) {
+						overallSetupsCurrentStatusMap.get(currentStatusTableField).add(String.format("%.0f", pTests)+PASSED_TESTS_OUT_OF_RUN_TESTS_SEPARATOR+String.format("%.0f", rTests));
+					} else if (currentStatusTableField == CurrentStatusTableField.PASS_PERCENTAGE) {
+						overallSetupsCurrentStatusMap.get(currentStatusTableField).add(String.format("%.2f", pTests/rTests*100) + "%");
+					} else if (currentStatusTableField == CurrentStatusTableField.PROGRESS_PERCENTAGE) {
+						for (String sValue : boundIpAddrsMap.get(CurrentStatusTableField.TOTAL_TESTS_IN_RUN)) {
+							try {
+								tTestsInRun += Integer.parseInt(sValue);
+							} catch(Exception e) {
+								e.printStackTrace();
+							}
+						}
+						overallSetupsCurrentStatusMap.get(currentStatusTableField).add(String.format("%.2f", rTests/tTestsInRun*100) + "%");
+					}
 					break;
-				case RUN_STATUS:
-					break;
+					
 				case RUN_TYPE:
-					break;
 				case SA_VERSION:
-					saVersion += boundIpAddrsMap.get(currentStatusTableField)+"\n"; 
-					break;
-				case TOTAL_TESTS_IN_RUN:
-					break;
 				case URL:
-					url += boundIpAddrsMap.get(currentStatusTableField)+"\n";
+				case RUN_STATUS:
+					String accStrValue = "";
+					for (String sValue : boundIpAddrsMap.get(currentStatusTableField)) {
+						accStrValue += sValue+boundValuesSeparator;
+					}
+					overallSetupsCurrentStatusMap.get(currentStatusTableField).add(accStrValue.replaceAll(boundValuesSeparator+"$", ""));
+					break;
+					
+				case TOTAL_TESTS_IN_RUN:
+					int totalTestsInRun = 0;
+					for (String sValue : boundIpAddrsMap.get(currentStatusTableField)) {
+						try {
+							totalTestsInRun += Integer.parseInt(sValue);
+						} catch(Exception e) {
+							e.printStackTrace();
+						}
+					}
+					overallSetupsCurrentStatusMap.get(currentStatusTableField).add(String.valueOf(totalTestsInRun));
 					break;
 				default:
 					break;
 				}
 			}
-			// add calculated result to overallSetupsCurrentStatusMap
 			
 			// clear boundIpAddrsMap for the calculation of values of the next bound group
 			boundIpAddrsMap.clear();
@@ -224,27 +270,57 @@ public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport im
 
 	}
 	
+	/**
+	 * moves the whole record (line) from the one map to another
+	 * @param srcMap - source map
+	 * @param dstMap - destination map the record will be moved into
+	 * @param entryIndexInSrcMap - record's index in the source map
+	 */
 	private void moveEntryFromMapToMap(Map<CurrentStatusTableField, List<String>> srcMap, Map<CurrentStatusTableField, List<String>> dstMap, int entryIndexInSrcMap) {
-		
-	}
-	
-	private int getIndexInListPerEntry(CurrentStatusTableField currentStatusTableField, String entry) {
-		int index = -1;
-		
-		return index;
+
+		for (CurrentStatusTableField statusTableField : CurrentStatusTableField.values()) {
+			List<String> tmpEntryList = new ArrayList<>();
+			try {
+				if (dstMap.containsKey(statusTableField)) {
+					tmpEntryList.addAll(dstMap.get(statusTableField));
+				}
+				tmpEntryList.add(srcMap.get(statusTableField).remove(entryIndexInSrcMap));
+				dstMap.put(statusTableField,tmpEntryList);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	/**
-	 * 
-	 * @param reportData
+	 * looks up for a desired entry in a field of the given map 
+	 * @param statusMap - map for lookup
+	 * @param currentStatusTableField - field for lookup
+	 * @param entry - entry to be found
+	 * @return entry's index in an list, or -1 if not found
+	 */
+	private int getIndexInListPerEntry(Map<CurrentStatusTableField, List<String>> statusMap, CurrentStatusTableField currentStatusTableField, String entry) {
+		int index = -1;
+		List<String> entryList = statusMap.get(currentStatusTableField);
+		for (String lEntry : entryList) {
+			index++;
+			if (lEntry.equalsIgnoreCase(entry)) {
+				return index;
+			}
+		}
+		return -1;	// entry not found
+	}
+	
+	/**
+	 * Composes url from a given ip
 	 * @param stationIp
-	 * @return
+	 * @return url in string format
 	 * @throws Exception
 	 */
 	protected String getUrl(String stationIp) throws Exception {
 		URL url = null;
 		try {
-			url = new URL("http://" + stationIp);
+			url = new URL(URL_PREFIX + stationIp);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 			return VALUE_NOT_AVAILABLE;	// if values above are null, no sense to do further calculations, returning NA
@@ -269,7 +345,7 @@ public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport im
 	protected void fillOverallSetupsStatusMap(Map<CurrentStatusTableField, String> singleSetupCurrentStatusMap) {
 //		backUpOldDataAndClearOverallSetupsCurrentStatusMap();
 		for (CurrentStatusTableField statusTableField : CurrentStatusTableField.values()) {
-			getOverallSetupsCurrentStatusMap().get(statusTableField).add(singleSetupCurrentStatusMap.get(statusTableField));
+			overallSetupsCurrentStatusMap.get(statusTableField).add(singleSetupCurrentStatusMap.get(statusTableField));
 		}
 	}
 }

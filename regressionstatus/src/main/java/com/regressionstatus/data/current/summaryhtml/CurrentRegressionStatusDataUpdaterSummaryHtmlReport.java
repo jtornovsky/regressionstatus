@@ -81,7 +81,7 @@ public class CurrentRegressionStatusDataUpdaterSummaryHtmlReport extends Abstrac
 		String runStatus = runStatusGeneralCalculator.calculateRunStatus(progressPercentageRealValue).toString();
 		
 		statusMap.put(CurrentStatusTableField.PASS_PERCENTAGE, String.format("%.2f", passPercentage) + "%");
-		statusMap.put(CurrentStatusTableField.PASSED_TESTS_OUT_OF_RUN_TESTS, numberOfPassedTests + " out of " + reportData.get(JsystemSummaryHtmlReportField.NUMBER_OF_TESTS));
+		statusMap.put(CurrentStatusTableField.PASSED_TESTS_OUT_OF_RUN_TESTS, numberOfPassedTests + PASSED_TESTS_OUT_OF_RUN_TESTS_SEPARATOR + reportData.get(JsystemSummaryHtmlReportField.NUMBER_OF_TESTS));
 		statusMap.put(CurrentStatusTableField.PROGRESS_PERCENTAGE, String.format("%.2f", progressPercentageRealValue) + "%");
 		statusMap.put(CurrentStatusTableField.TOTAL_TESTS_IN_RUN, totalTestsInRunInStringFormat);
 		statusMap.put(CurrentStatusTableField.RUN_STATUS, runStatus);
