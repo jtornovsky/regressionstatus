@@ -31,4 +31,9 @@ public interface UrlParametersHandler {
 	 * after getting all params the map should be cleared from data, not to affect rstatus without parameters
 	 */
 	public void clearUrlParametersMap();
+	
+	/**
+	 * after getting specific param the map should be cleared from this specific command, not to affect rstatus without parameters
+	 */
+	public void clearUrlParameterCommand(UrlCommand commandToClear);
 }

@@ -140,7 +140,8 @@ public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport im
 		}
 		
 		// after getting all params the map should be cleared from data, not to affect rstatus without parameters
-		urlParametersHandler.clearUrlParametersMap();
+		urlParametersHandler.clearUrlParameterCommand(UrlCommand.IP);
+		urlParametersHandler.clearUrlParameterCommand(UrlCommand.USE_WITH_DEFAULT_IPS);
 		
 		return ipAddressesList;
 	}
@@ -201,54 +202,47 @@ public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport im
 			
 			// calculate totals of collected data of bound group
 			String boundValuesSeparator = "#";
+			String saVersion = "";
+			String runType = "";
+			int passedTests = 0;
+			int runTests = 0;
+			int totalTestsInRun = 0;
+			String runStatus = "";
+			String url = "";
+			
 			for (CurrentStatusTableField currentStatusTableField : CurrentStatusTableField.values()) {
+				
 				switch (currentStatusTableField) {
-				case PROGRESS_PERCENTAGE:
+				
 				case PASSED_TESTS_OUT_OF_RUN_TESTS:
-				case PASS_PERCENTAGE:
-					double pTests = 0;
-					double rTests = 0;
-					double tTestsInRun = 0;
-					for (String sValue : boundIpAddrsMap.get(CurrentStatusTableField.PASSED_TESTS_OUT_OF_RUN_TESTS)) {
+					for (String sValue : boundIpAddrsMap.get(currentStatusTableField)) {
 						String[] pTestOutOfRtests = sValue.split(PASSED_TESTS_OUT_OF_RUN_TESTS_SEPARATOR);
-						
 						try {
-							pTests += Integer.parseInt(pTestOutOfRtests[0]);
-							rTests += Integer.parseInt(pTestOutOfRtests[1]);
+							passedTests += Integer.parseInt(pTestOutOfRtests[0]);
+							runTests += Integer.parseInt(pTestOutOfRtests[1]);
 						} catch (NumberFormatException e) {
 							e.printStackTrace();
 						}
-						
-					}
-					if (currentStatusTableField == CurrentStatusTableField.PASSED_TESTS_OUT_OF_RUN_TESTS) {
-						overallSetupsCurrentStatusMap.get(currentStatusTableField).add(String.format("%.0f", pTests)+PASSED_TESTS_OUT_OF_RUN_TESTS_SEPARATOR+String.format("%.0f", rTests));
-					} else if (currentStatusTableField == CurrentStatusTableField.PASS_PERCENTAGE) {
-						overallSetupsCurrentStatusMap.get(currentStatusTableField).add(String.format("%.2f", pTests/rTests*100) + "%");
-					} else if (currentStatusTableField == CurrentStatusTableField.PROGRESS_PERCENTAGE) {
-						for (String sValue : boundIpAddrsMap.get(CurrentStatusTableField.TOTAL_TESTS_IN_RUN)) {
-							try {
-								tTestsInRun += Integer.parseInt(sValue);
-							} catch(Exception e) {
-								e.printStackTrace();
-							}
-						}
-						overallSetupsCurrentStatusMap.get(currentStatusTableField).add(String.format("%.2f", rTests/tTestsInRun*100) + "%");
 					}
 					break;
 					
 				case RUN_TYPE:
+					runType = addValueToString(boundIpAddrsMap.get(currentStatusTableField), boundValuesSeparator);
+					break;
+					
 				case SA_VERSION:
+					saVersion = addValueToString(boundIpAddrsMap.get(currentStatusTableField), boundValuesSeparator);
+					break;
+					
 				case URL:
+					url = addValueToString(boundIpAddrsMap.get(currentStatusTableField), boundValuesSeparator);
+					break;
+					
 				case RUN_STATUS:
-					String accStrValue = "";
-					for (String sValue : boundIpAddrsMap.get(currentStatusTableField)) {
-						accStrValue += sValue+boundValuesSeparator;
-					}
-					overallSetupsCurrentStatusMap.get(currentStatusTableField).add(accStrValue.replaceAll(boundValuesSeparator+"$", ""));
+					runStatus = addValueToString(boundIpAddrsMap.get(currentStatusTableField), boundValuesSeparator);
 					break;
 					
 				case TOTAL_TESTS_IN_RUN:
-					int totalTestsInRun = 0;
 					for (String sValue : boundIpAddrsMap.get(currentStatusTableField)) {
 						try {
 							totalTestsInRun += Integer.parseInt(sValue);
@@ -256,8 +250,48 @@ public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport im
 							e.printStackTrace();
 						}
 					}
+					break;
+					
+				default:
+					break;
+				}
+			}
+			
+			// populate map with a calculated values
+			for (CurrentStatusTableField currentStatusTableField : CurrentStatusTableField.values()) {
+				switch (currentStatusTableField) {
+				case PROGRESS_PERCENTAGE:
+					overallSetupsCurrentStatusMap.get(currentStatusTableField).add(String.format("%.2f", (double)runTests/(double)totalTestsInRun*100) + "%");
+					break;
+					
+				case PASSED_TESTS_OUT_OF_RUN_TESTS:
+					overallSetupsCurrentStatusMap.get(currentStatusTableField).add(passedTests+PASSED_TESTS_OUT_OF_RUN_TESTS_SEPARATOR+runTests);
+					break;
+					
+				case PASS_PERCENTAGE:
+					overallSetupsCurrentStatusMap.get(currentStatusTableField).add(String.format("%.2f", (double)passedTests/(double)runTests*100) + "%");
+					break;
+					
+				case RUN_TYPE:
+					overallSetupsCurrentStatusMap.get(currentStatusTableField).add(runType);
+					break;
+					
+				case SA_VERSION:
+					overallSetupsCurrentStatusMap.get(currentStatusTableField).add(saVersion);
+					break;
+					
+				case URL:
+					overallSetupsCurrentStatusMap.get(currentStatusTableField).add(url);
+					break;
+					
+				case RUN_STATUS:
+					overallSetupsCurrentStatusMap.get(currentStatusTableField).add(runStatus);
+					break;
+					
+				case TOTAL_TESTS_IN_RUN:
 					overallSetupsCurrentStatusMap.get(currentStatusTableField).add(String.valueOf(totalTestsInRun));
 					break;
+					
 				default:
 					break;
 				}
@@ -266,8 +300,26 @@ public abstract class AbstractCurrentRegressionStatusDataUpdaterSummaryReport im
 			// clear boundIpAddrsMap for the calculation of values of the next bound group
 			boundIpAddrsMap.clear();
 		}
+		
+		// after getting all params the map should be cleared from data, not to affect rstatus without parameters
+		urlParametersHandler.clearUrlParameterCommand(UrlCommand.BIND);
+		
 		return overallBoundIpAddressesGroups;
 
+	}
+	
+	/**
+	 * 
+	 * @param fieldValuesList
+	 * @param separator
+	 * @return
+	 */
+	private String addValueToString(List<String> fieldValuesList, String separator) {
+		String valuesAccumulator = "";
+		for (String sValue : fieldValuesList) {
+			valuesAccumulator += sValue+separator;
+		}
+		return valuesAccumulator.replaceAll(separator+"$", "");
 	}
 	
 	/**

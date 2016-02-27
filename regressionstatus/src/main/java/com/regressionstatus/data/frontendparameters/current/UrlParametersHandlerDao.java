@@ -148,4 +148,11 @@ public class UrlParametersHandlerDao implements UrlParametersHandler {
 	public void clearUrlParametersMap() {
 		urlParametersContainer.clear(); //deleting previously filled values
 	}
+
+	@Override
+	public void clearUrlParameterCommand(UrlCommand commandToClear) {
+		if (urlParametersContainer.containsKey(commandToClear)) {
+			urlParametersContainer.remove(commandToClear);
+		} 
+	}
 }
