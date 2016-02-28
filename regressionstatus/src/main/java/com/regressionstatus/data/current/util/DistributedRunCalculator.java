@@ -15,6 +15,8 @@ import com.regressionstatus.data.frontendparameters.current.UrlParametersHandler
  *
  */
 public class DistributedRunCalculator extends AbstractUrlCommandExecuterCommonMethodsHolder {
+	
+	public static String BOUND_VALUES_SEPARATOR = "#";
 
 	/**
 	 * returns the map that holds the overall current status of all regression setups
@@ -62,7 +64,6 @@ public class DistributedRunCalculator extends AbstractUrlCommandExecuterCommonMe
 			}
 			
 			// calculate totals of collected data of bound group
-			String boundValuesSeparator = "#";
 			String saVersion = "";
 			String runType = "";
 			int passedTests = 0;
@@ -88,19 +89,19 @@ public class DistributedRunCalculator extends AbstractUrlCommandExecuterCommonMe
 					break;
 					
 				case RUN_TYPE:
-					runType = addValueToString(boundIpAddrsMap.get(currentStatusTableField), boundValuesSeparator);
+					runType = addValueToString(boundIpAddrsMap.get(currentStatusTableField), BOUND_VALUES_SEPARATOR);
 					break;
 					
 				case SA_VERSION:
-					saVersion = addValueToString(boundIpAddrsMap.get(currentStatusTableField), boundValuesSeparator);
+					saVersion = addValueToString(boundIpAddrsMap.get(currentStatusTableField), BOUND_VALUES_SEPARATOR);
 					break;
 					
 				case URL:
-					url = addValueToString(boundIpAddrsMap.get(currentStatusTableField), boundValuesSeparator);
+					url = addValueToString(boundIpAddrsMap.get(currentStatusTableField), BOUND_VALUES_SEPARATOR);
 					break;
 					
 				case RUN_STATUS:
-					runStatus = addValueToString(boundIpAddrsMap.get(currentStatusTableField), boundValuesSeparator);
+					runStatus = addValueToString(boundIpAddrsMap.get(currentStatusTableField), BOUND_VALUES_SEPARATOR);
 					break;
 					
 				case TOTAL_TESTS_IN_RUN:
