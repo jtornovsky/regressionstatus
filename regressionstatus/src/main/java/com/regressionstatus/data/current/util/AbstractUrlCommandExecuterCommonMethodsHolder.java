@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.regressionstatus.data.current.CurrentRegressionStatusDataUpdater;
 import com.regressionstatus.data.current.CurrentStatusTableField;
+import com.regressionstatus.data.frontendparameters.current.UrlCommand;
+import com.regressionstatus.data.frontendparameters.current.UrlParametersHandler;
 
 /**
  * 
@@ -12,6 +15,17 @@ import com.regressionstatus.data.current.CurrentStatusTableField;
  *
  */
 abstract public class AbstractUrlCommandExecuterCommonMethodsHolder {
+
+	/**
+	 * 
+	 * @param urlParametersHandler
+	 * @param cmdList
+	 */
+	protected static void cleanUpOnReturn(UrlParametersHandler urlParametersHandler, UrlCommand...cmdList) {
+		for (UrlCommand cmd : cmdList) {
+			urlParametersHandler.clearUrlParameterCommand(cmd);
+		}
+	}
 	
 	/**
 	 * 
@@ -21,9 +35,16 @@ abstract public class AbstractUrlCommandExecuterCommonMethodsHolder {
 	 */
 	protected static String addValueToString(List<String> fieldValuesList, String separator) {
 		String valuesAccumulator = "";
-		for (String sValue : fieldValuesList) {
-			valuesAccumulator += sValue+separator;
+		
+		if (fieldValuesList != null) {
+			for (String sValue : fieldValuesList) {
+				valuesAccumulator += sValue+separator;
+			}
+		} else {
+			// in case of no data in reports, we put default values
+			valuesAccumulator = CurrentRegressionStatusDataUpdater.VALUE_NOT_AVAILABLE;
 		}
+
 		return valuesAccumulator.replaceAll(separator+"$", "");
 	}
 	

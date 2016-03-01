@@ -26,6 +26,7 @@ public class CustomIpaddressesListBuilder extends AbstractUrlCommandExecuterComm
 		List<String> defaultIps = Arrays.asList(rawRemoteStationsIpaddresses.trim().split(AbstractCurrentRegressionStatusDataUpdaterSummaryReport.MULTI_VALUES_PROPERTY_SEPARATOR));
 		
 		if (ipAddressesList == null || ipAddressesList.size() == 0) {	// no custom ipaddresses, but only default ones
+			cleanUpOnReturn(urlParametersHandler, UrlCommand.IP, UrlCommand.USE_WITH_DEFAULT_IPS);
 			return defaultIps;
 		} 
 		
@@ -37,9 +38,9 @@ public class CustomIpaddressesListBuilder extends AbstractUrlCommandExecuterComm
 		}
 		
 		// after getting all params the map should be cleared from data, not to affect rstatus without parameters
-		urlParametersHandler.clearUrlParameterCommand(UrlCommand.IP);
-		urlParametersHandler.clearUrlParameterCommand(UrlCommand.USE_WITH_DEFAULT_IPS);
+		cleanUpOnReturn(urlParametersHandler, UrlCommand.IP, UrlCommand.USE_WITH_DEFAULT_IPS);
 		
 		return ipAddressesList;
 	}
+
 }

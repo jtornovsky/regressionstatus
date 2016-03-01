@@ -27,9 +27,15 @@ public class DistributedRunCalculator extends AbstractUrlCommandExecuterCommonMe
 		List<String> boundIpAddressesGroups = urlParametersHandler.getUrlParameterFromMap(UrlCommand.BIND);
 		
 		if (boundIpAddressesGroups != null && boundIpAddressesGroups.size() > 0) {	// calculate bound setups if any
-			overallSetupsCurrentStatusMap = calculateOverallSetupsCurrentStatusMapWithBoundedGroups(boundIpAddressesGroups, overallSetupsCurrentStatusMap, urlParametersHandler);
-		} 
-		
+			try {
+				overallSetupsCurrentStatusMap = calculateOverallSetupsCurrentStatusMapWithBoundedGroups(boundIpAddressesGroups, overallSetupsCurrentStatusMap, urlParametersHandler);
+			} catch (Exception e) {
+				e.printStackTrace();
+				// after getting all params the map should be cleared from data, not to affect rstatus without parameters
+				cleanUpOnReturn(urlParametersHandler, UrlCommand.BIND);
+				return overallSetupsCurrentStatusMap;
+			} 
+		}
 		return overallSetupsCurrentStatusMap;
 	}
 	
@@ -39,7 +45,7 @@ public class DistributedRunCalculator extends AbstractUrlCommandExecuterCommonMe
 	 * @param boundIpAddressesGroups - bound groups retrieved from the url command line
 	 * @return
 	 */
-	private static Map<CurrentStatusTableField, List<String>> calculateOverallSetupsCurrentStatusMapWithBoundedGroups(List<String> boundIpAddressesGroups, Map<CurrentStatusTableField, List<String>> overallSetupsCurrentStatusMap, UrlParametersHandler urlParametersHandler) {
+	private static Map<CurrentStatusTableField, List<String>> calculateOverallSetupsCurrentStatusMapWithBoundedGroups(List<String> boundIpAddressesGroups, Map<CurrentStatusTableField, List<String>> overallSetupsCurrentStatusMap, UrlParametersHandler urlParametersHandler) throws Exception {
 		
 		Map<CurrentStatusTableField, List<String>> boundIpAddrsMap = new HashMap<>();
 		
@@ -54,6 +60,11 @@ public class DistributedRunCalculator extends AbstractUrlCommandExecuterCommonMe
 					ipEntryIndex = getIndexInListPerEntry(overallSetupsCurrentStatusMap, CurrentStatusTableField.URL, UrlBuilder.getUrl(ip));
 				} catch (Exception e) {
 					e.printStackTrace();
+					// clear boundIpAddrsMap for the calculation of values of the next bound group							
+					boundIpAddrsMap.clear();
+					// after getting all params the map should be cleared from data, not to affect rstatus without parameters
+					cleanUpOnReturn(urlParametersHandler, UrlCommand.BIND);
+					return overallSetupsCurrentStatusMap;
 				}
 				if (ipEntryIndex != -1) {
 					moveEntryFromMapToMap(overallSetupsCurrentStatusMap, boundIpAddrsMap, ipEntryIndex);
@@ -74,8 +85,16 @@ public class DistributedRunCalculator extends AbstractUrlCommandExecuterCommonMe
 			
 			for (CurrentStatusTableField currentStatusTableField : CurrentStatusTableField.values()) {
 				
+				if (!boundIpAddrsMap.containsKey(currentStatusTableField) || boundIpAddrsMap.get(currentStatusTableField) == null) {
+					// clear boundIpAddrsMap for the calculation of values of the next bound group							
+					boundIpAddrsMap.clear();
+					// after getting all params the map should be cleared from data, not to affect rstatus without parameters
+					cleanUpOnReturn(urlParametersHandler, UrlCommand.BIND);
+					return overallSetupsCurrentStatusMap;
+				}
+
 				switch (currentStatusTableField) {
-				
+
 				case PASSED_TESTS_OUT_OF_RUN_TESTS:
 					for (String sValue : boundIpAddrsMap.get(currentStatusTableField)) {
 						String[] pTestOutOfRtests = sValue.split(AbstractCurrentRegressionStatusDataUpdaterSummaryReport.PASSED_TESTS_OUT_OF_RUN_TESTS_SEPARATOR);
@@ -84,36 +103,46 @@ public class DistributedRunCalculator extends AbstractUrlCommandExecuterCommonMe
 							runTests += Integer.parseInt(pTestOutOfRtests[1]);
 						} catch (NumberFormatException e) {
 							e.printStackTrace();
+							// clear boundIpAddrsMap for the calculation of values of the next bound group							
+							boundIpAddrsMap.clear();
+							// after getting all params the map should be cleared from data, not to affect rstatus without parameters
+							cleanUpOnReturn(urlParametersHandler, UrlCommand.BIND);
+							return overallSetupsCurrentStatusMap;
 						}
 					}
 					break;
-					
+
 				case RUN_TYPE:
 					runType = addValueToString(boundIpAddrsMap.get(currentStatusTableField), BOUND_VALUES_SEPARATOR);
 					break;
-					
+
 				case SA_VERSION:
 					saVersion = addValueToString(boundIpAddrsMap.get(currentStatusTableField), BOUND_VALUES_SEPARATOR);
 					break;
-					
+
 				case URL:
 					url = addValueToString(boundIpAddrsMap.get(currentStatusTableField), BOUND_VALUES_SEPARATOR);
 					break;
-					
+
 				case RUN_STATUS:
 					runStatus = addValueToString(boundIpAddrsMap.get(currentStatusTableField), BOUND_VALUES_SEPARATOR);
 					break;
-					
+
 				case TOTAL_TESTS_IN_RUN:
 					for (String sValue : boundIpAddrsMap.get(currentStatusTableField)) {
 						try {
 							totalTestsInRun += Integer.parseInt(sValue);
 						} catch(Exception e) {
 							e.printStackTrace();
+							// clear boundIpAddrsMap for the calculation of values of the next bound group							
+							boundIpAddrsMap.clear();
+							// after getting all params the map should be cleared from data, not to affect rstatus without parameters
+							cleanUpOnReturn(urlParametersHandler, UrlCommand.BIND);
+							return overallSetupsCurrentStatusMap;
 						}
 					}
 					break;
-					
+
 				default:
 					break;
 				}
@@ -164,10 +193,8 @@ public class DistributedRunCalculator extends AbstractUrlCommandExecuterCommonMe
 		}
 		
 		// after getting all params the map should be cleared from data, not to affect rstatus without parameters
-		urlParametersHandler.clearUrlParameterCommand(UrlCommand.BIND);
+		cleanUpOnReturn(urlParametersHandler, UrlCommand.BIND);
 		
 		return overallSetupsCurrentStatusMap;
-
 	}
-
 }
