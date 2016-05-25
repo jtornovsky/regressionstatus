@@ -5,7 +5,7 @@
 	version="3.0">
 	<display-name>regressionstatus</display-name>
 	<welcome-file-list>
-		<welcome-file>tomcatTester.jsp</welcome-file>
+		<welcome-file>helpPage.jsp</welcome-file>
 	</welcome-file-list>
 	<servlet>
 		<servlet-name>webmvc-dispatcher</servlet-name>
