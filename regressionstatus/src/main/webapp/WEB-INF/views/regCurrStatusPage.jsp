@@ -21,8 +21,7 @@
 </head>
 <body>
 	<%
-		String regressionCurrentStatusWebpageAutoRefreshInterval = (String) request
-				.getAttribute("regressionCurrentStatusWebpageAutoRefreshInterval");
+		String regressionCurrentStatusWebpageAutoRefreshInterval = (String) request.getAttribute("regressionCurrentStatusWebpageAutoRefreshInterval");
 		response.addHeader("Refresh", regressionCurrentStatusWebpageAutoRefreshInterval);
 	%>
 	Page auto refreshed every
