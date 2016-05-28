@@ -52,6 +52,18 @@ public class RegressionCurrentStatusController {
 	private String regressionCurrentStatusWebpageAutoRefreshInterval;
 	
 	/**
+	 * holds the value, that denotes the pass percentage is too low and regression should be debugged
+	 */
+	@Value("${regression.run.pass_percentage.red_level}")
+	private String regressionRunPassPercentageRedLevel;
+	
+	/**
+	 * holds the value, that denotes the pass percentage is normal 
+	 */
+	@Value("${regression.run.pass_percentage.green_level}")
+	private String regressionRunPassPercentageGreenLevel;
+	
+	/**
 	 * holds the instance of a an data updater to be used to calculate status report for all regression setups 
 	 */
 	@Autowired
@@ -71,6 +83,8 @@ public class RegressionCurrentStatusController {
 	@RequestMapping(value = "/rstatus", method = RequestMethod.GET)
 	public String showCurrentRegressionStatus(String parameters, Model model) {
 		model.addAttribute("regressionCurrentStatusWebpageAutoRefreshInterval", regressionCurrentStatusWebpageAutoRefreshInterval);
+		model.addAttribute("regressionRunPassPercentageRedLevel", regressionRunPassPercentageRedLevel);
+		model.addAttribute("regressionRunPassPercentageGreenLevel", regressionRunPassPercentageGreenLevel);
 		model.addAttribute("statusPageTitle", statusPageTitle);
 		model.addAttribute("statusPageHeader", statusPageHeader);
 		regressionStatusUpdater.fetchStatusData();

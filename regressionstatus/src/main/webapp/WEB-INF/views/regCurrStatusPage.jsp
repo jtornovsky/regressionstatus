@@ -47,15 +47,27 @@
 				int size = resp.get(CurrentStatusTableField.SA_VERSION).size();
 				String fieldToShow = null;
 				String[] splitFields;
+				
+				double regressionRunPassPercentageRedLevel = 0.0;
+				double regressionRunPassPercentageGreenLevel = 0.0;
 
+				try {
+					regressionRunPassPercentageRedLevel = Double.parseDouble((String)request.getAttribute("regressionRunPassPercentageRedLevel"));
+					regressionRunPassPercentageGreenLevel = Double.parseDouble((String)request.getAttribute("regressionRunPassPercentageGreenLevel"));
+
+				} catch(NumberFormatException e) {
+					// don't throw anything
+				}
 				for (int i = 0; i < size; i++) {
 					out.println("<tr>");
 					for (CurrentStatusTableField status : resp.keySet()) {
 						fieldToShow = resp.get(status).get(i);
+						splitFields = fieldToShow.split(DistributedRunCalculator.BOUND_VALUES_SEPARATOR);
+						
 						switch (status) {
 						case URL:
 							if (!fieldToShow.toString().equals(CurrentRegressionStatusDataUpdater.VALUE_NOT_AVAILABLE)) {
-								splitFields = fieldToShow.split(DistributedRunCalculator.BOUND_VALUES_SEPARATOR);
+								
 								fieldToShow = "<td>";
 								for (String url : splitFields) {
 									fieldToShow += "<a href='" + url + "' target=\"_blank\">" + url + "</a><br>";
@@ -63,8 +75,33 @@
 								fieldToShow += "</td>";
 								break;
 							}
+							
+						case PASS_PERCENTAGE:
+							if (regressionRunPassPercentageRedLevel > 0.0 && regressionRunPassPercentageGreenLevel > 0.0) {	// checking levels validity
+								fieldToShow = "<td ";
+								for (String passPercentageInStringFormat : splitFields) {
+									if (passPercentageInStringFormat.equals(CurrentRegressionStatusDataUpdater.VALUE_NOT_AVAILABLE)) {
+										fieldToShow += " style='background-color:white'>" + passPercentageInStringFormat;
+										continue;
+									}
+									double passPercentage = 0.0;
+									try {
+										passPercentage = Double.parseDouble(passPercentageInStringFormat);
+									} catch(NumberFormatException e) {
+										fieldToShow += " style='background-color:white'>" + passPercentageInStringFormat;
+										continue;
+									}
+									if (passPercentage <= regressionRunPassPercentageRedLevel) {
+										fieldToShow += " style='background-color:red'>" + passPercentage + "%";
+									} else if (passPercentage >= regressionRunPassPercentageGreenLevel) {
+										fieldToShow += " style='background-color:green'>" + passPercentage + "%";
+									}
+								}
+								fieldToShow += "<br></td>";
+								break;
+							}
+							
 						default:
-							splitFields = fieldToShow.split(DistributedRunCalculator.BOUND_VALUES_SEPARATOR);
 							fieldToShow = "<td>";
 							for (String field : splitFields) {
 								fieldToShow += field + "<br>";
