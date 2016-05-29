@@ -1,11 +1,10 @@
-<%@ page language="java" contentType="text/html; charset=windows-1255"
-    pageEncoding="windows-1255"%>
+<%@ page language="java" contentType="text/html; charset=windows-1255"  pageEncoding="windows-1255"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1255">
 <title>Help Page</title>
-<img src="images/favicon.png" />
+<link rel="shortcut icon" type="image/png"	href="/regressionstatus/images/favicon.png">
 <link rel="shortcut icon" type="image/png" href="images/favicon.png">
 <!-- <img src="https://ssl.gstatic.com/ui/v1/icons/mail/images/favicon5.ico" /> -->
 <!-- <link rel="shortcut icon" href="https://ssl.gstatic.com/ui/v1/icons/mail/images/favicon5.ico" type="image/x-icon"> -->
@@ -15,7 +14,7 @@
 
 <h2> * Regular (read-only) working mode:</h2>
 
-To only see current status open url:</br>
+To only see current status with default regression setups open url:</br>
 <a href='http://192.168.20.251:8080/regressionstatus/showCurrentStatus/rstatus' target=\"_blank\">http://192.168.20.251:8080/regressionstatus/showCurrentStatus/rstatus</a><br>
 </br>
 
@@ -28,15 +27,26 @@ usedefaultips=false - default ips won't be used, only a custom ips, that defined
 For instance:</br>
 <a href='http://192.168.20.251:8080/regressionstatus/showCurrentStatus/rstatus/ip=192.168.30.45&192.168.20.107&192.168.20.245;usedefaultips=true' target=\"_blank\">http://192.168.20.251:8080/regressionstatus/showCurrentStatus/rstatus/ip=192.168.30.45&192.168.20.107&192.168.20.245;usedefaultips=true</a><br>
 <a href='http://192.168.20.251:8080/regressionstatus/showCurrentStatus/rstatus/ip=192.168.30.45;usedefaultips=false' target=\"_blank\">http://192.168.20.251:8080/regressionstatus/showCurrentStatus/rstatus/ip=192.168.30.45;usedefaultips=false</a><br>
-<br>Don't forget to use ';' to separate commands in an url.</br> 
-In case of any input error, the default regression status page will be shown.</br>
 </br>
 
 <h2> * Binding calculations of 2 and more setups (distribute run)</h2> 
 
-To calculate 2 or more setups use ' (apostrophe)</br> 
+ - To calculate 2 or more setups use ' (apostrophe)</br> 
 For instance, to bind 192.168.20.245 and 192.168.20.107, use the following url to see the their overall status</br>
-<a href='http://192.168.20.251:8080/regressionstatus/showCurrentStatus/rstatus/bind=192.168.20.245\'192.168.20.107' target=\"_blank\">http://192.168.20.251:8080/regressionstatus/showCurrentStatus/rstatus/bind=192.168.20.245'192.168.20.107</a><br>
+<a href="http://192.168.20.251:8080/regressionstatus/showCurrentStatus/rstatus/bind=192.168.20.245'192.168.20.107" target=\"_blank\">http://192.168.20.251:8080/regressionstatus/showCurrentStatus/rstatus/bind=192.168.20.245'192.168.20.107</a><br>
+ - To calculate 3 (and even more) setups, just add desired ip followed by ' (apostrophe)</br>
+For instance, to bind 192.168.20.245, 192.168.20.107 and 192.168.20.119, use the following url to see the their overall status</br>
+<a href="http://192.168.20.251:8080/regressionstatus/showCurrentStatus/rstatus/bind=192.168.20.245'192.168.20.107'192.168.20.119" target=\"_blank\">http://192.168.20.251:8080/regressionstatus/showCurrentStatus/rstatus/bind=192.168.20.245'192.168.20.107'192.168.20.119</a><br>
+ - To chain more than 2 setups for separated calculation, use & (ampersand).
+For instance, to bind 192.168.20.245 and 192.168.20.107 with 192.168.20.119 and 192.168.30.45,</br> 
+use the following url to see the their overall status</br> 
+<a href="http://192.168.20.251:8080/regressionstatus/showCurrentStatus/rstatus/bind=192.168.20.245'192.168.20.107&192.168.20.119'192.168.30.45" target=\"_blank\">http://192.168.20.251:8080/regressionstatus/showCurrentStatus/rstatus/bind=192.168.20.245'192.168.20.107&192.168.20.119'192.168.30.45</a><br>
+</br>
+
+<h2> * Notes</h2>
+Don't forget to use ';' to separate commands in an url.</br> 
+In case of any input error, the default regression status page will be shown.</br>
+Every single ip could be used only once in a bind calculation.</br> 
 In case of not valid values in the parameters one of setups (such as NA), bound entry won't be shown in the status page.</br>
 </br>
 </body>

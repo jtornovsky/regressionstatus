@@ -160,7 +160,7 @@ public class DistributedRunCalculator extends AbstractUrlCommandExecuterCommonMe
 					break;
 					
 				case PASS_PERCENTAGE:
-					overallSetupsCurrentStatusMap.get(currentStatusTableField).add(String.format("%.2f", (double)passedTests/(double)runTests*100) + "%");
+					overallSetupsCurrentStatusMap.get(currentStatusTableField).add(String.format("%.2f", (double)passedTests/(double)runTests*100));
 					break;
 					
 				case RUN_TYPE:
