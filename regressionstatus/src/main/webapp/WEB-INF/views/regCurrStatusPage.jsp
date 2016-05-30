@@ -142,6 +142,7 @@
 					
 				case PASS_PERCENTAGE:
 					if (regressionRunPassPercentageRedLevel > 0.0 && regressionRunPassPercentageGreenLevel > 0.0 && !isInPrintVersion) {	// checking levels validity
+						cellBackgroundColor = "white";
 						fieldToShow = "<td ";
 						for (String passPercentageInStringFormat : splitFields) {
 							if (passPercentageInStringFormat.equals(CurrentRegressionStatusDataUpdater.VALUE_NOT_AVAILABLE)) {
