@@ -37,7 +37,11 @@
 		}
 		
 		String statusPageHeader = (String) request.getAttribute("statusPageHeader");
-		boolean isDisplayInPrintVersion = (Boolean)request.getAttribute("isDisplayInPrintVersion");
+		boolean isDisplayInPrintVersion = false;
+		Boolean retValue = (Boolean)request.getAttribute("isDisplayInPrintVersion");
+		if (retValue != null) {
+			isDisplayInPrintVersion = retValue.booleanValue();
+		}
 		printStatusPageBackgrounds(out, isDisplayInPrintVersion, regressionCurrentStatusWebpageAutoRefreshInterval, statusPageHeader);
 	%>
 	<table border="2" cellpadding="3" cellspacing="1">
