@@ -91,6 +91,7 @@ public class UrlParametersHandlerDao implements UrlParametersHandler {
 				}
 				break;
 				
+			case PRINT_STATUS:
 			case USE_WITH_DEFAULT_IPS:
 				boolValue = cmdParam.toLowerCase().trim();
 				if (boolValue.equals("false") || boolValue.equals("true")) {

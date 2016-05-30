@@ -17,7 +17,7 @@ import com.regressionstatus.data.frontendparameters.current.UrlParametersHandler
 abstract public class AbstractUrlCommandExecuterCommonMethodsHolder {
 
 	/**
-	 * 
+	 * after getting all params the map should be cleared from data, not to affect rstatus without parameters
 	 * @param urlParametersHandler
 	 * @param cmdList
 	 */

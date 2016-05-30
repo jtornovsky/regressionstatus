@@ -12,6 +12,7 @@ public enum UrlCommand {
 
 	IP("ip"),
 	USE_WITH_DEFAULT_IPS("usedefaultips"),
+	PRINT_STATUS("printstatus"),
 	BIND("bind");
 	
 	private final String urlCommand;

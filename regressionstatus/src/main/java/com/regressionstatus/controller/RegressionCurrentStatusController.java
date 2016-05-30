@@ -1,6 +1,8 @@
 package com.regressionstatus.controller;
 
 
+import java.util.List;
+
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.regressionstatus.data.current.CurrentRegressionStatusDataUpdater;
+import com.regressionstatus.data.frontendparameters.current.UrlCommand;
 import com.regressionstatus.data.frontendparameters.current.UrlParametersHandler;
 
 /**
@@ -63,6 +66,8 @@ public class RegressionCurrentStatusController {
 	@Value("${regression.run.pass_percentage.green_level}")
 	private String regressionRunPassPercentageGreenLevel;
 	
+	private boolean isDisplayInPrintVersion = false;
+	
 	/**
 	 * holds the instance of a an data updater to be used to calculate status report for all regression setups 
 	 */
@@ -101,6 +106,33 @@ public class RegressionCurrentStatusController {
 	@RequestMapping(value = "/rstatus/{parameters:.+}", method = RequestMethod.GET)
 	public String showCurrentRegressionStatusWithParameters(@PathVariable("parameters") String parameters, Model model) {
 		urlParametersHandler.fillUrlParametersMap(parameters);
+		model.addAttribute("isDisplayInPrintVersion", isStatusTableToBeShownInPrintedVersion(urlParametersHandler));
 		return showCurrentRegressionStatus(parameters, model);
+	}
+	
+	/**
+	 * looking in url params a value of a 'printstatus' parameter
+	 * @param urlParametersHandler
+	 * @return
+	 */
+	private boolean isStatusTableToBeShownInPrintedVersion(UrlParametersHandler urlParametersHandler) {
+		List<String> shouldBePrinted = urlParametersHandler.getUrlParameterFromMap(UrlCommand.PRINT_STATUS);
+		if (shouldBePrinted != null && shouldBePrinted.size() > 0) {
+			cleanUpOnReturn(urlParametersHandler, UrlCommand.PRINT_STATUS);
+			return Boolean.parseBoolean(shouldBePrinted.get(0));
+		}
+		cleanUpOnReturn(urlParametersHandler, UrlCommand.PRINT_STATUS);
+		return false;
+	}
+	
+	/**
+	 * after getting all params the map should be cleared from data, not to affect rstatus without parameters
+	 * @param urlParametersHandler
+	 * @param cmdList
+	 */
+	private static void cleanUpOnReturn(UrlParametersHandler urlParametersHandler, UrlCommand...cmdList) {
+		for (UrlCommand cmd : cmdList) {
+			urlParametersHandler.clearUrlParameterCommand(cmd);
+		}
 	}
 }
